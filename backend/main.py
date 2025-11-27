@@ -935,7 +935,7 @@ def get_stock_data(ticker: str):
 
         # 0. Historical Trend (20 Years) - Moved to Top
         trend_pass = False
-        trend_val = "Flat/Decreasing"
+        trend_val = "N/A"
         
         try:
             if not history.empty:
@@ -951,15 +951,45 @@ def get_stock_data(ticker: str):
                 if not hist_20y.empty:
                     start_price = hist_20y["Close"].iloc[0]
                     end_price = hist_20y["Close"].iloc[-1]
+                    max_price = hist_20y["Close"].max()
                     
-                    # Check if overall trend is increasing (End > Start)
-                    if end_price > start_price:
+                    # Calculate CAGR
+                    # Ensure we have at least some duration to avoid division by zero
+                    days = (hist_20y.index[-1] - hist_20y.index[0]).days
+                    years = days / 365.25
+                    
+                    if years > 1 and start_price > 0:
+                        cagr = (end_price / start_price) ** (1 / years) - 1
+                    else:
+                        # Fallback for very short history or zero start price
+                        cagr = 0
+                        
+                    # Calculate Drawdown from All-Time High (in this period)
+                    drawdown = (max_price - end_price) / max_price if max_price > 0 else 0
+                    
+                    # Logic Implementation
+                    if cagr < 0:
+                        # Scenario C: Downtrend
+                        trend_pass = False
+                        trend_val = f"Downtrend (CAGR {cagr:.1%})"
+                    elif cagr < 0.05:
+                        # Scenario B: Stagnant / Low Growth
+                        trend_pass = False
+                        trend_val = f"Stagnant (CAGR {cagr:.1%})"
+                    elif drawdown > 0.30:
+                        # Scenario A: Significant Decline from Peak
+                        trend_pass = False
+                        trend_val = f"Declining (Down {drawdown:.1%} from High)"
+                    else:
+                        # Pass: Strong Growth + Momentum
                         trend_pass = True
-                        trend_val = "Increasing"
+                        trend_val = f"Increasing (CAGR {cagr:.1%})"
+                        
         except Exception as e:
             print(f"Error calculating historical trend: {e}")
+            trend_val = "Error"
 
-        score_criteria.append({"name": "Historical Trend (20Y) increasing", "status": "Pass" if trend_pass else "Fail", "value": trend_val})
+        score_criteria.append({"name": "Historical Trend (20Y)", "status": "Pass" if trend_pass else "Fail", "value": trend_val})
 
         # 1. Net Income / Operating Income (Conditional)
         ni_pass = check_trend(net_income_series, "increasing")
