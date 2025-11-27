@@ -87,7 +87,6 @@ const FinancialTables = () => {
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className={styles.iconButton}
-                    style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer' }}
                 >
                     {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
                 </button>

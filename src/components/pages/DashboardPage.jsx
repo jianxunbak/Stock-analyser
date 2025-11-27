@@ -110,20 +110,12 @@ const DashboardPage = () => {
 
                         {currentUser && (
                             <>
-                                <span style={{ color: 'white', fontWeight: '500', marginRight: '1rem' }}>
+                                <span className={styles.username}>
                                     {currentUser.displayName}
                                 </span>
                                 <button
                                     onClick={handleLogout}
-                                    style={{
-                                        background: 'transparent',
-                                        border: '1px solid rgba(255,255,255,0.2)',
-                                        color: 'white',
-                                        padding: '0.5rem 1rem',
-                                        borderRadius: '0.5rem',
-                                        cursor: 'pointer',
-                                        marginRight: '1rem'
-                                    }}
+                                    className={styles.logoutButton}
                                 >
                                     Log Out
                                 </button>
@@ -173,21 +165,7 @@ const DashboardPage = () => {
                         {!loading && (
                             <div
                                 onClick={() => navigate('/')}
-                                style={{
-                                    position: 'absolute',
-                                    top: '-2rem',
-                                    left: '0rem',
-                                    zIndex: 20,
-                                    cursor: 'pointer',
-                                    color: '#9ca3af',
-                                    padding: '4px',
-                                    borderRadius: '50%',
-                                    backgroundColor: 'rgba(0,0,0,0.4)',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center'
-                                }}
-                                className="hover:text-white transition-colors"
+                                className={styles.backButton}
                             >
                                 <ArrowLeft size={20} />
                             </div>
