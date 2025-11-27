@@ -215,6 +215,10 @@ const OverviewCard = ({ moatStatusLabel }) => {
                             </div>
                         ))}
                     </div>
+                    <div className={styles.scrollIndicator}>
+                        <span className={styles.scrollText}>Scroll for details</span>
+                        <ChevronDown size={14} className={styles.scrollIcon} />
+                    </div>
                 </div>
             </div>
 

@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
 import styles from './HeroPage.module.css';
-import { useStockData } from '../../hooks/useStockData';
 import { useAuth } from '../../context/AuthContext';
 import Modal from '../ui/Modal';
 import WatchlistModal from '../ui/WatchlistModal'; // New component
@@ -14,19 +13,12 @@ const HeroPage = () => {
     const [showWatchlist, setShowWatchlist] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const navigate = useNavigate();
-    const { loadStockData } = useStockData();
     const { currentUser, login, logout } = useAuth();
 
-    const handleSearch = async (e) => {
+    const handleSearch = (e) => {
         if (e) e.preventDefault();
         if (ticker.trim()) {
-            try {
-                await loadStockData(ticker.trim().toUpperCase());
-                navigate(`/analysis?ticker=${ticker.trim().toUpperCase()}`);
-            } catch (error) {
-                setErrorMessage(error.response?.data?.detail || error.message || "Could not find stock.");
-                setShowErrorModal(true);
-            }
+            navigate(`/analysis?ticker=${ticker.trim().toUpperCase()}`);
         }
     };
 
