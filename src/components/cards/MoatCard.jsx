@@ -58,7 +58,6 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
         } catch (err) {
             console.error("AI Evaluation failed:", err);
             setError("Failed to evaluate with AI. Please try again.");
-            setErrorTitle("AI Evaluation Error");
             setShowErrorModal(true);
         } finally {
             setIsEvaluating(false);
