@@ -43,10 +43,11 @@ const ProfitabilityCard = () => {
     if (!stockData) return null;
 
     const { profitability, growth } = stockData;
+    if (!profitability || !growth) return null;
 
     // Prepare data
     const prepareChartData = () => {
-        if (!profitability.tables || !growth.tables) return [];
+        if (!profitability || !growth || !profitability.tables || !growth.tables) return [];
 
         const receivables = profitability.tables.accounts_receivable || [];
         const revenue = growth.tables.total_revenue || [];

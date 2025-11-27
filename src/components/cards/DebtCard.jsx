@@ -9,6 +9,7 @@ const DebtCard = () => {
     if (!stockData) return null;
 
     const { debt } = stockData;
+    if (!debt) return null;
 
     return (
         <div className={styles.card}>

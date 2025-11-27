@@ -41,10 +41,11 @@ const GrowthCard = () => {
     if (!stockData) return null;
 
     const { growth } = stockData;
+    if (!growth) return null;
 
     // Prepare data for charts
     const prepareChartData = () => {
-        if (!growth.tables) return [];
+        if (!growth || !growth.tables) return [];
 
         const revenue = growth.tables.total_revenue || [];
         const netIncome = growth.tables.net_income || [];
@@ -69,7 +70,7 @@ const GrowthCard = () => {
     };
 
     const prepareMarginData = () => {
-        if (!growth.tables) return [];
+        if (!growth || !growth.tables) return [];
 
         const gross = growth.tables.gross_margin || [];
         const net = growth.tables.net_margin || [];

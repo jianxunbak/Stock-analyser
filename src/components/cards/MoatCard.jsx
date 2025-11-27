@@ -111,7 +111,8 @@ const MoatCard = ({ onMoatStatusChange }) => {
         if (!comparisonTicker) return;
         try {
             // Fetch history for comparison ticker
-            const response = await fetch(`http://localhost:8000/api/stock/history/${comparisonTicker}`);
+            const apiUrl = import.meta.env.VITE_API_URL || '/api';
+            const response = await fetch(`${apiUrl}/stock/history/${comparisonTicker}`);
             if (!response.ok) throw new Error('Failed to fetch');
             const historyData = await response.json();
 
@@ -317,7 +318,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
                                         fontWeight: 'bold' // Optional, to make the label stand out
                                     }}
                                 />
-                                <Area type="monotone" dataKey="value" name={stockData.overview.symbol} stroke="#F59E0B" fillOpacity={1} fill="url(#colorPriceMoat)" />
+                                <Area type="monotone" dataKey="value" name={stockData.overview?.symbol || 'Stock'} stroke="#F59E0B" fillOpacity={1} fill="url(#colorPriceMoat)" />
                                 {comparisonStocks.map((stock, index) => (
                                     <Area
                                         key={stock.ticker}
