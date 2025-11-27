@@ -22,6 +22,7 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
     const [errorTitle, setErrorTitle] = useState('Error');
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [isEvaluating, setIsEvaluating] = useState(false);
+    const [hasEvaluated, setHasEvaluated] = useState(false);
 
     const handleAiEvaluation = async () => {
         if (!stockData?.overview?.symbol) return;
@@ -54,11 +55,11 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
             console.log("Mapped Scores:", newScores); // Debug log
             setScores(newScores);
             setAiDescription(result.description || '');
+            setHasEvaluated(true);
             lastEvaluatedSymbol.current = stockData.overview.symbol;
         } catch (err) {
             console.error("AI Evaluation failed:", err);
-            setError("Failed to evaluate with AI. Please try again.");
-            setShowErrorModal(true);
+            setAiDescription("Failed to retrieve moat from AI, please evaluate yourself.");
         } finally {
             setIsEvaluating(false);
             if (onIsEvaluatingChange) onIsEvaluatingChange(false);
@@ -76,27 +77,20 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
     }, []);
 
     React.useEffect(() => {
-        const symbol = stockData?.overview?.symbol;
-
-        // 1. Skip if no symbol, still loading stock data, or AI is already running.
-        if (!symbol || loading || isEvaluating) {
-            return;
-        }
-
-        // 2. Check if the current symbol is different from the last one evaluated.
-        // Use the explicit check to ensure we run for a new symbol.
-        const hasAlreadyEvaluated = symbol === lastEvaluatedSymbol.current;
-
-        // 3. Only run if we haven't processed this symbol yet.
-        if (!hasAlreadyEvaluated) {
-            // Run the async function
-            handleAiEvaluation();
-
-            // 🛑 IMPORTANT: DO NOT SET THE REF HERE. 
-            // Set the ref *only after* the API call succeeds to prevent skipping the next attempt if the first fails.
-        }
-
-    }, [stockData?.overview?.symbol, loading, isEvaluating]);
+        // Reset state when symbol changes
+        setScores({
+            brand: 0,
+            barriers: 0,
+            scale: 0,
+            network: 0,
+            switching: 0
+        });
+        setAiDescription('');
+        setIsEvaluating(false);
+        setHasEvaluated(false);
+        prevMoatStatusLabel.current = undefined;
+        if (onIsEvaluatingChange) onIsEvaluatingChange(false);
+    }, [stockData?.overview?.symbol]);
 
     // Define chart colors based on theme
     const chartColors = useMemo(() => {
@@ -139,6 +133,7 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
             ...prev,
             [category]: parseFloat(value)
         }));
+        setHasEvaluated(true);
     };
 
     const totalScore = useMemo(() => {
@@ -155,11 +150,12 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
 
     // Notify parent of status change
     React.useEffect(() => {
-        if (onMoatStatusChange && prevMoatStatusLabel.current !== moatStatus.label) {
-            onMoatStatusChange(moatStatus.label);
-            prevMoatStatusLabel.current = moatStatus.label;
+        const statusToSend = hasEvaluated ? moatStatus.label : null;
+        if (onMoatStatusChange && prevMoatStatusLabel.current !== statusToSend) {
+            onMoatStatusChange(statusToSend);
+            prevMoatStatusLabel.current = statusToSend;
         }
-    }, [moatStatus, onMoatStatusChange]);
+    }, [moatStatus, hasEvaluated, onMoatStatusChange]);
 
     const history = stockData?.history;
 
@@ -280,14 +276,23 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
                                 <Loader2 className={styles.spin} size={16} />
                                 <span>AI Analyzing Moat...</span>
                             </div>
-                        ) : aiDescription && (
+                        ) : (
                             <>
-                                <div className={styles.score}>
-                                    <div className={`${styles.scoreValue} ${moatStatus.color}`}>{totalScore} <span className={styles.scoreMax}>/ 5</span></div>
-                                    <p className={`${styles.scoreStatus} ${moatStatus.color}`}>{moatStatus.label}</p>
-                                </div>
+                                {hasEvaluated && (
+                                    <div className={styles.score}>
+                                        <div className={`${styles.scoreValue} ${moatStatus.color}`}>{totalScore} <span className={styles.scoreMax}>/ 5</span></div>
+                                        <p className={`${styles.scoreStatus} ${moatStatus.color}`}>{moatStatus.label}</p>
+                                    </div>
+                                )}
 
-                                <p className={styles.description}>{aiDescription}</p>
+                                {aiDescription && <p className={styles.description}>{aiDescription}</p>}
+
+                                {!aiDescription && (
+                                    <button onClick={handleAiEvaluation} className={styles.aiButton}>
+                                        <Sparkles size={14} />
+                                        Ask AI to Evaluate
+                                    </button>
+                                )}
                             </>
                         )}
                     </div>

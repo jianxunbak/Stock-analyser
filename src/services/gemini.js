@@ -58,12 +58,23 @@ export const evaluateMoat = async (stockCode) => {
       });
       const result = await model.generateContent(prompt);
       const response = await result.response;
+      const text = response.text();
+      const jsonMatch = text.match(/\{[\s\S]*\}/);
 
-      // Since responseMimeType is set, the text should be clean JSON
-      const jsonString = response.text().trim();
+      if (!jsonMatch) {
+        // If the regex fails to find braces, attempt to strip markdown as a fallback
+        const strippedText = text.replace(/```json|```/g, '').trim();
 
-      return JSON.parse(jsonString); // Should succeed now
+        try {
+          return JSON.parse(strippedText);
+        } catch (e) {
+          throw new Error("Could not parse final JSON response from Gemini.");
+        }
+      }
 
+      // If regex matched, parse the extracted object
+      const jsonString = jsonMatch[0];
+      return JSON.parse(jsonString);
 
     } catch (error) {
       console.warn(`Failed with model ${modelName}:`, error);
@@ -78,7 +89,8 @@ export const evaluateMoat = async (stockCode) => {
     console.log("Falling back to gemini-2.5-flash...");
     try {
       // Fallback to Flash
-      return await generateWithModel("gemini-2.5-flash");
+      const result = await generateWithModel("gemini-2.5-flash");
+      return result;
     } catch (fallbackError) {
       console.error("All models failed:", fallbackError);
       throw fallbackError;

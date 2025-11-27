@@ -301,15 +301,16 @@
     background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
     color: white;
     border: none;
-    padding: 0.5rem 1rem;
+    padding: 0.35rem 0.75rem;
     border-radius: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s;
-    margin-top: 1rem;
-    width: 100%;
+    margin-top: 0.5rem;
+    width: auto;
     justify-content: center;
+    align-self: center;
 }
 
 .aiButton:hover {

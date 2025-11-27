@@ -933,6 +933,34 @@ def get_stock_data(ticker: str):
                 
             return False
 
+        # 0. Historical Trend (20 Years) - Moved to Top
+        trend_pass = False
+        trend_val = "Flat/Decreasing"
+        
+        try:
+            if not history.empty:
+                # Filter last 20 years
+                cutoff_date = pd.Timestamp.now() - pd.DateOffset(years=20)
+                
+                # Make cutoff timezone-aware if history index is timezone-aware
+                if history.index.tz is not None:
+                    cutoff_date = cutoff_date.tz_localize(history.index.tz)
+                
+                hist_20y = history[history.index >= cutoff_date]
+                
+                if not hist_20y.empty:
+                    start_price = hist_20y["Close"].iloc[0]
+                    end_price = hist_20y["Close"].iloc[-1]
+                    
+                    # Check if overall trend is increasing (End > Start)
+                    if end_price > start_price:
+                        trend_pass = True
+                        trend_val = "Increasing"
+        except Exception as e:
+            print(f"Error calculating historical trend: {e}")
+
+        score_criteria.append({"name": "Historical Trend (20Y) increasing", "status": "Pass" if trend_pass else "Fail", "value": trend_val})
+
         # 1. Net Income / Operating Income (Conditional)
         ni_pass = check_trend(net_income_series, "increasing")
         
@@ -1086,6 +1114,8 @@ def get_stock_data(ticker: str):
             gr_val = gearing_ratio if gearing_ratio is not None else 100
             gr_pass = gr_val < 45
             score_criteria.append({"name": "Gearing Ratio < 45%", "status": "Pass" if gr_pass else "Fail", "value": f"{gr_val:.2f}%" if gr_val != 100 else "N/A"})
+
+
 
         total_score = sum(1 for c in score_criteria if c["status"] == "Pass")
         max_score = len(score_criteria)

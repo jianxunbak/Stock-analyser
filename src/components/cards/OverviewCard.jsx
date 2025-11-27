@@ -147,11 +147,18 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                     };
                 }
                 if (moatStatusLabel) {
-                    const isPass = moatStatusLabel === "Wide Moat" || moatStatusLabel === "Narrow Moat";
+                    const isPass = moatStatusLabel === "Wide Moat";
                     return {
                         ...c,
                         status: isPass ? "Pass" : "Fail",
                         value: moatStatusLabel
+                    };
+                } else {
+                    // Not evaluating and no result yet -> Pending Evaluation
+                    return {
+                        ...c,
+                        status: "Pending Evaluation",
+                        value: "Pending"
                     };
                 }
             }
@@ -244,7 +251,7 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                         {displayedCriteria.map((c, idx) => (
                             <div key={idx} className={styles.criteriaItem}>
                                 <span className={styles.criteriaName}>{c.name}</span>
-                                <span className={`${styles.criteriaStatus} ${c.status === 'Pass' ? styles.pass : c.status === 'Analyzing...' ? styles.pending : styles.fail}`}>
+                                <span className={`${styles.criteriaStatus} ${c.status === 'Pass' ? styles.pass : (c.status === 'Analyzing...' || c.status === 'Pending Evaluation') ? styles.pending : styles.fail}`}>
                                     {c.status}
                                 </span>
                             </div>
