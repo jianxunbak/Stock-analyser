@@ -13,10 +13,12 @@ import FinancialTables from '../cards/FinancialTables';
 import NewsEstimates from '../cards/NewsEstimates';
 import Modal from '../ui/Modal';
 import WatchlistModal from '../ui/WatchlistModal';
-import { Search, ArrowLeft, Star } from 'lucide-react';
+import { Search, ArrowLeft, Star, Menu, X, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
+import UserProfileModal from '../ui/UserProfileModal';
 import styles from './DashboardPage.module.css';
+
+// ...
 
 const DashboardPage = () => {
     const { loadStockData, error, loading } = useStockData();
@@ -24,9 +26,11 @@ const DashboardPage = () => {
     const [moatStatusLabel, setMoatStatusLabel] = useState(null);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showWatchlist, setShowWatchlist] = useState(false);
+    const [showProfileModal, setShowProfileModal] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
     const { currentUser, logout, loading: authLoading } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
 
     // Persistence: Load ticker from localStorage or URL on mount
     useEffect(() => {
@@ -58,7 +62,7 @@ const DashboardPage = () => {
     }, [error]);
 
     const handleSearch = (e) => {
-        e.preventDefault();
+        if (e) e.preventDefault();
 
         const tickerValue = ticker.trim();
 
@@ -73,10 +77,6 @@ const DashboardPage = () => {
         setSearchParams({ ticker: upperTicker }); // Update URL
     };
 
-    const handleCloseError = () => {
-        setShowErrorModal(false);
-    };
-
     const handleLogout = async () => {
         try {
             await logout();
@@ -85,6 +85,30 @@ const DashboardPage = () => {
             console.error("Failed to log out", error);
         }
     };
+
+    const handleSearchIconClick = (e) => {
+        if (ticker.trim()) {
+            handleSearch(e);
+        }
+    };
+
+    const handleCloseError = () => {
+        setShowErrorModal(false);
+    };
+
+    // Click outside to close menu
+    React.useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (isMenuOpen && !event.target.closest(`.${styles.mobileMenu}`) && !event.target.closest(`.${styles.menuButton}`)) {
+                setIsMenuOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [isMenuOpen]);
 
     if (authLoading) return <div>Loading...</div>; // Or a spinner
 
@@ -101,27 +125,7 @@ const DashboardPage = () => {
                     </h1>
 
                     <div className={styles.actionGroup}>
-                        <button
-                            className={styles.watchlistButton}
-                            onClick={() => setShowWatchlist(true)}
-                        >
-                            <Star size={16} className={styles.starIcon} />
-                        </button>
-
-                        {currentUser && (
-                            <>
-                                <span className={styles.username}>
-                                    {currentUser.displayName}
-                                </span>
-                                <button
-                                    onClick={handleLogout}
-                                    className={styles.logoutButton}
-                                >
-                                    Log Out
-                                </button>
-                            </>
-                        )}
-
+                        {/* Search Bar - Always Visible */}
                         <div className={styles.searchContainer}>
                             <input
                                 type="text"
@@ -138,11 +142,100 @@ const DashboardPage = () => {
                             />
                             <Search
                                 className={styles.searchIcon}
-                                onClick={handleSearch}
+                                onClick={handleSearchIconClick}
                             />
                         </div>
 
+                        {/* Desktop Actions */}
+                        <div className={styles.desktopActions}>
+                            <button
+                                className={styles.watchlistButton}
+                                onClick={() => setShowWatchlist(true)}
+                            >
+                                <Star size={16} className={styles.starIcon} />
+                            </button>
+
+                            {currentUser && (
+                                <>
+                                    <button
+                                        className={styles.userButton}
+                                        onClick={() => setShowProfileModal(true)}
+                                        title="User Profile"
+                                    >
+                                        {currentUser.photoURL ? (
+                                            <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
+                                        ) : (
+                                            <div className={styles.userAvatarPlaceholder}>
+                                                {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
+                                            </div>
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={handleLogout}
+                                        className={styles.watchlistButton}
+                                        title="Log Out"
+                                    >
+                                        <LogOut size={16} className={styles.starIcon} />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Mobile Menu Button */}
+                        <button
+                            className={styles.menuButton}
+                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        >
+                            <Menu size={24} />
+                        </button>
                     </div>
+
+                    {/* Mobile Menu Dropdown */}
+                    {isMenuOpen && (
+                        <div className={styles.mobileMenu}>
+                            <button
+                                className={styles.watchlistButton}
+                                onClick={() => {
+                                    setShowWatchlist(true);
+                                    setIsMenuOpen(false);
+                                }}
+                            >
+                                <Star size={16} className={styles.starIcon} />
+                            </button>
+
+                            {currentUser && (
+                                <>
+                                    <button
+                                        className={styles.userButton}
+                                        onClick={() => {
+                                            setShowProfileModal(true);
+                                            setIsMenuOpen(false);
+                                        }}
+                                    >
+                                        {currentUser.photoURL ? (
+                                            <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
+                                        ) : (
+                                            <div className={styles.userAvatarPlaceholder}>
+                                                {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
+                                            </div>
+                                        )}
+                                    </button>
+
+                                    <button
+                                        onClick={() => {
+                                            handleLogout();
+                                            setIsMenuOpen(false);
+                                        }}
+                                        className={styles.watchlistButton}
+                                        title="Log Out"
+                                    >
+                                        <LogOut size={16} className={styles.starIcon} />
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    )}
 
                 </header>
 
@@ -152,13 +245,6 @@ const DashboardPage = () => {
                     title="Stock Not Found"
                     message={error ? `Could not find stock. Please check the ticker and try again.\nError: ${error}` : "An error occurred."}
                 />
-
-                {showWatchlist && (
-                    <WatchlistModal
-                        isOpen={showWatchlist}
-                        onClose={() => setShowWatchlist(false)}
-                    />
-                )}
 
                 <div className={styles.grid}>
                     <div className={styles.colSpan3} style={{ position: 'relative' }}>
@@ -197,6 +283,21 @@ const DashboardPage = () => {
                         <FinancialTables />
                     </div>
                 </div>
+
+                {showWatchlist && (
+                    <WatchlistModal
+                        isOpen={showWatchlist}
+                        onClose={() => setShowWatchlist(false)}
+                    />
+                )}
+
+                {showProfileModal && currentUser && (
+                    <UserProfileModal
+                        isOpen={showProfileModal}
+                        onClose={() => setShowProfileModal(false)}
+                        user={currentUser}
+                    />
+                )}
             </div>
         </div>
     );

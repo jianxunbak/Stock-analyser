@@ -6,9 +6,34 @@ import {
 } from 'recharts';
 import Modal from '../ui/Modal';
 import styles from './MoatCard.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
 const MoatCard = ({ onMoatStatusChange }) => {
     const { stockData, loading } = useStockData();
+    const { theme } = useTheme();
+    const [chartHeight, setChartHeight] = React.useState(300);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            // Use 400px for desktop (>= 768px), 300px for mobile (< 768px)
+            setChartHeight(window.innerWidth < 768 ? 300 : 400);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Define chart colors based on theme
+    const chartColors = useMemo(() => {
+        const isDark = theme === 'dark';
+        return {
+            grid: isDark ? "#374151" : "#e5e7eb",
+            text: isDark ? "#9CA3AF" : "#6b7280",
+            tooltipBg: isDark ? "#1F2937" : "#ffffff",
+            tooltipColor: isDark ? "#fff" : "#111827",
+            tooltipBorder: isDark ? "none" : "1px solid #e5e7eb"
+        };
+    }, [theme]);
 
     // State for the 5 moat categories
     // Values: 1 (High), 0.5 (Low), 0 (None)
@@ -238,32 +263,59 @@ const MoatCard = ({ onMoatStatusChange }) => {
                     )}
 
                     <div className={styles.chartWrapper}>
-                        <ResponsiveContainer width="100%" height="100%">
-                            <AreaChart data={mergedChartData}>
+                        <ResponsiveContainer width="100%" height={chartHeight}>
+                            <AreaChart data={mergedChartData} margin={{ top: 10, right: 0, left: -20, bottom: 100 }}>
                                 <defs>
                                     <linearGradient id="colorPriceMoat" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8} />
                                         <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
                                     </linearGradient>
                                 </defs>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+                                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                                 <XAxis
                                     dataKey="date"
-                                    stroke="#9CA3AF"
-                                    tick={{ fontSize: 12 }}
+                                    stroke={chartColors.text}
+                                    tick={{ fontSize: 10, fill: chartColors.text }}
                                     tickFormatter={(val) => val.substring(0, 4)} // Show Year only
                                     minTickGap={50}
                                 />
                                 <YAxis
-                                    stroke="#9CA3AF"
-                                    tick={{ fontSize: 12 }}
-                                    tickFormatter={(val) => `${val.toFixed(0)}%`}
+                                    stroke={chartColors.text}
+                                    tick={{ fontSize: 10, fill: chartColors.text, angle: -60 }}
+                                    // tickFormatter={(val) => `${val.toFixed(0)}%`}
+                                    width={50}
+                                    tickFormatter={(val) => {
+                                        // Ensure val is treated as a percentage (0-100) and display divided by 100
+                                        return `${(val / 100).toFixed(1)}%`;
+                                    }}
+                                    label={{
+                                        value: 'In hundreds',
+                                        angle: -90,
+                                        position: 'insideLeft', // Positions the label vertically on the Y-axis
+                                        offset: 60, // Adjust this offset to move the label away from the tick numbers
+                                        fill: chartColors.text,
+                                        fontSize: 12
+                                    }}
+
                                 />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                                    itemStyle={{ color: '#E5E7EB' }}
+                                    contentStyle={{
+                                        backgroundColor: chartColors.tooltipBg,
+                                        border: chartColors.tooltipBorder,
+                                        color: chartColors.tooltipColor,
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        fontSize: '12px'
+                                    }}
+                                    // itemStyle={{ color: chartColors.tooltipColor }}
                                     formatter={(value, name) => [`${value.toFixed(2)}%`, name]}
                                     labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                                    itemStyle={{ margin: '0', padding: '0' }}
+                                    labelStyle={{
+                                        margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                        padding: '0',
+                                        fontWeight: 'bold' // Optional, to make the label stand out
+                                    }}
                                 />
                                 <Area type="monotone" dataKey="value" name={stockData.overview.symbol} stroke="#F59E0B" fillOpacity={1} fill="url(#colorPriceMoat)" />
                                 {comparisonStocks.map((stock, index) => (

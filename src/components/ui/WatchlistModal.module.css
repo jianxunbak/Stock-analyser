@@ -13,20 +13,20 @@
 }
 
 .modal {
-    background-color: #1f2937;
+    background-color: var(--bg-secondary);
     border-radius: 12px;
     width: 95%;
     max-width: 900px;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    border: 1px solid #374151;
+    box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color);
 }
 
 .header {
     padding: 1.5rem;
-    border-bottom: 1px solid #374151;
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -35,14 +35,14 @@
 .title {
     font-size: 1.5rem;
     font-weight: 600;
-    color: #f3f4f6;
+    color: var(--text-primary);
     margin: 0;
 }
 
 .closeButton {
     background: none;
     border: none;
-    color: #9ca3af;
+    color: var(--text-secondary);
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 50%;
@@ -50,8 +50,8 @@
 }
 
 .closeButton:hover {
-    background-color: #374151;
-    color: #f3f4f6;
+    background-color: var(--glass-bg);
+    color: var(--text-primary);
 }
 
 .content {
@@ -61,7 +61,7 @@
 
 .emptyText {
     text-align: center;
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-size: 1.1rem;
     padding: 2rem 0;
 }
@@ -70,21 +70,31 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    overflow-x: auto;
+    /* Enable horizontal scroll */
+    padding-bottom: 0.5rem;
+    /* Space for scrollbar */
 }
 
 /* Header Row */
 .headerRow {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 60px;
-    padding: 0.75rem 1rem;
-    font-size: 0.875rem;
+    grid-template-columns: 110px 110px 110px 110px 110px 110px 110px;
+    /* Fixed widths for better control */
+    padding: 0.75rem 0.5rem;
+    /* Match row padding */
+    font-size: 0.75rem;
     font-weight: 600;
-    color: #9ca3af;
+    color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid #374151;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 0.5rem;
     text-align: center;
+    min-width: 650px;
+    /* Ensure minimum width to trigger scroll */
+    gap: 0.5rem;
+    /* Match row gap */
 }
 
 .actionsHeader {
@@ -92,21 +102,25 @@
 }
 
 /* Data Row */
+/* Data Row */
 .row {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 60px;
+    grid-template-columns: 110px 110px 110px 110px 110px 110px 110px;
+    /* Fixed widths matching header */
     align-items: center;
-    padding: 1rem;
-    background-color: #111827;
-    border: 1px solid #374151;
+    padding: 1rem 0.5rem;
+    background-color: var(--bg-primary);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     transition: all 0.2s;
     text-align: center;
+    gap: 0.5rem;
+    min-width: 650px;
+    /* Ensure minimum width to trigger scroll */
 }
 
 .row:hover {
-    border-color: #4b5563;
-    /* background-color: #111827; */
+    border-color: var(--text-secondary);
 }
 
 .tickerCol {
@@ -116,24 +130,25 @@
 }
 
 .tickerLink {
-    font-size: 1.1rem;
+    font-size: 0.9rem;
+    /* Reduced */
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     cursor: pointer;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .tickerLink:hover {
-    color: #ebebeb;
-    /* text-decoration: underline; */
+    color: var(--text-secondary);
     transform: scale(1.1);
 }
 
 .priceCol,
 .valCol {
-    font-size: 1rem;
-    color: #e5e7eb;
+    font-size: 0.875rem;
+    /* Reduced */
+    color: var(--text-primary);
     font-weight: 500;
     display: flex;
     justify-content: center;
@@ -148,16 +163,20 @@
 }
 
 .scoreBadge {
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.5rem;
+    /* Reduced padding */
     border-radius: 9999px;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    /* Reduced */
     font-weight: 600;
 }
 
 .signalBadge {
-    padding: 0.25rem 0.75rem;
+    padding: 0.25rem 0.5rem;
+    /* Reduced padding */
     border-radius: 6px;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
+    /* Reduced */
     font-weight: 600;
     text-transform: uppercase;
 }
@@ -187,25 +206,21 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* width: 32px;
-    height: 32px; */
-    /* border-radius: 6px; */
     border: none;
     background-color: transparent;
-    color: #9ca3af;
+    color: var(--text-secondary);
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .iconButton:hover {
-    background-color: #374151;
-    color: #f3f4f6;
-    border-color: #4b5563;
+    background-color: var(--glass-bg);
+    color: var(--text-primary);
+    border-color: var(--text-secondary);
 }
 
 .deleteButton {
     color: #ef4444;
-    /* border-color: rgba(239, 68, 68, 0.5); */
 }
 
 .deleteButton:hover {

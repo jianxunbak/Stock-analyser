@@ -1,12 +1,50 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useStockData } from '../../hooks/useStockData';
 import {
     ComposedChart, Line, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart
 } from 'recharts';
 import styles from './GrowthCard.module.css';
+import { useTheme } from '../../context/ThemeContext';
 
 const GrowthCard = () => {
     const { stockData, loading } = useStockData();
+    const [barSize, setBarSize] = React.useState(20);
+    const [chartHeight, setChartHeight] = React.useState(300);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            setBarSize(window.innerWidth < 768 ? 5 : 20);
+        };
+        handleResize(); // Set initial
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    React.useEffect(() => {
+        const handleResize = () => {
+            // Use 400px for desktop (>= 768px), 300px for mobile (< 768px)
+            setChartHeight(window.innerWidth < 768 ? 300 : 400);
+
+            // Keep the bar size logic here too
+            setBarSize(window.innerWidth < 768 ? 2 : 12);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
+    // Define chart colors based on theme
+    const { theme } = useTheme();
+    const chartColors = useMemo(() => {
+        const isDark = theme === 'dark';
+        return {
+            grid: isDark ? "#374151" : "#e5e7eb",
+            text: isDark ? "#9CA3AF" : "#6b7280",
+            tooltipBg: isDark ? "#1F2937" : "#ffffff",
+            tooltipColor: isDark ? "#fff" : "#111827",
+            tooltipBorder: isDark ? "none" : "1px solid #e5e7eb"
+        };
+    }, [theme]);
 
     if (loading) return <div className={styles.loading}></div>;
     if (!stockData) return null;
@@ -79,10 +117,6 @@ const GrowthCard = () => {
         ];
     }
 
-    console.log("GrowthCard - financialData:", financialData);
-    console.log("GrowthCard - marginData:", marginData);
-    console.log("GrowthCard - growth.tables:", growth.tables);
-
     return (
         <div className={styles.card}>
             <h3 className={styles.title}>Growth Analysis</h3>
@@ -99,24 +133,47 @@ const GrowthCard = () => {
 
             {/* Chart 1: Revenue, Net Income, OCF */}
             <div className={styles.chartContainer}>
-                <h4 className={styles.chartTitle}>Financial Performance (Revenue vs Income vs Cash Flow)</h4>
+                <h4 className={styles.chartTitle}>Financial Performance</h4>
                 {financialData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="date" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                            <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                                formatter={(val) => [`$${(val / 1e9).toFixed(2)}B`, '']}
-                            />
-                            <Legend />
-                            <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={20} />
-                            <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={20} />
-                            <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={20} />
-                            <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={20} />
-                        </ComposedChart>
-                    </ResponsiveContainer>
+                    <div className={styles.chartWrapper}>
+                        <ResponsiveContainer width="100%" height={chartHeight}>
+                            <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: 10, bottom: 50 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                                <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
+                                <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: chartColors.tooltipBg,
+                                        border: chartColors.tooltipBorder,
+                                        color: chartColors.tooltipColor,
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        fontSize: '12px'
+                                    }}
+                                    formatter={(val, name) => [`$${(val / 1e9).toFixed(2)}B`, name]}
+                                    itemStyle={{ margin: '0', padding: '0' }}
+                                    labelStyle={{
+                                        margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                        padding: '0',
+                                        fontWeight: 'bold' // Optional, to make the label stand out
+                                    }}
+                                />
+                                <Legend wrapperStyle={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    alignItems: 'center',
+                                    paddingTop: 10,
+                                    paddingBottom: 10,
+                                }} />
+                                <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={barSize < 20 ? 2 : 12} />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
                 ) : (
                     <div className={styles.noData}>
                         No financial data available for chart
@@ -128,20 +185,43 @@ const GrowthCard = () => {
             <div className={styles.chartContainer}>
                 <h4 className={styles.chartTitle}>Margin Trends</h4>
                 {marginData.length > 0 ? (
-                    <ResponsiveContainer width="100%" height="100%">
-                        <ComposedChart data={marginData}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="date" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                            <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} tickFormatter={(val) => `${val}%`} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                                formatter={(val) => [`${val.toFixed(2)}%`, '']}
-                            />
-                            <Legend />
-                            <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={20} />
-                            <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={20} />
-                        </ComposedChart>
-                    </ResponsiveContainer>
+                    <div className={styles.chartWrapper}>
+                        <ResponsiveContainer width="100%" height={chartHeight}>
+                            <ComposedChart data={marginData} margin={{ top: 10, right: 10, left: 10, bottom: 50 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                                <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
+                                <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `${val}%`} />
+                                <Tooltip
+                                    contentStyle={{
+                                        backgroundColor: chartColors.tooltipBg,
+                                        border: chartColors.tooltipBorder,
+                                        color: chartColors.tooltipColor,
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                        fontSize: '12px'
+                                    }}
+                                    formatter={(val, name) => [`${val.toFixed(2)}%`, name]}
+                                    itemStyle={{ margin: '0', padding: '0' }}
+                                    labelStyle={{
+                                        margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                        padding: '0',
+                                        fontWeight: 'bold' // Optional, to make the label stand out
+                                    }}
+                                />
+                                <Legend wrapperStyle={{
+                                    width: '100%',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    fontSize: '12px',
+                                    alignItems: 'center',
+                                    paddingTop: 10,
+                                    paddingBottom: 10,
+                                }} />
+                                <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize < 20 ? 2 : 12} />
+                            </ComposedChart>
+                        </ResponsiveContainer>
+                    </div>
                 ) : (
                     <div className={styles.noData}>
                         No margin data available for chart

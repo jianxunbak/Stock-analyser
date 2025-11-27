@@ -6,17 +6,30 @@ import {
 import styles from './OverviewCard.module.css';
 import { ChevronDown, Star } from 'lucide-react';
 import axios from 'axios';
+import { useTheme } from '../../context/ThemeContext';
 
 const OverviewCard = ({ moatStatusLabel }) => {
     const { stockData, loading } = useStockData();
+    const { theme } = useTheme();
     const [timeframe, setTimeframe] = useState('1Y');
     const [showDetails, setShowDetails] = useState(false);
     const [chartData, setChartData] = useState([]);
     const [chartLoading, setChartLoading] = useState(false);
     const [isInWatchlist, setIsInWatchlist] = useState(false);
 
+    // Define chart colors based on theme
+    const chartColors = useMemo(() => {
+        const isDark = theme === 'dark';
+        return {
+            grid: isDark ? "#374151" : "#e5e7eb",
+            text: isDark ? "#9CA3AF" : "#6b7280",
+            tooltipBg: isDark ? "#1F2937" : "#ffffff",
+            tooltipColor: isDark ? "#fff" : "#111827",
+            tooltipBorder: isDark ? "none" : "1px solid #e5e7eb"
+        };
+    }, [theme]);
+
     // Check watchlist status on mount/update
-    // Check watchlist status on mount/update and listen for changes
     useEffect(() => {
         const checkWatchlist = () => {
             if (stockData?.overview?.symbol) {
@@ -64,6 +77,9 @@ const OverviewCard = ({ moatStatusLabel }) => {
                 }
             }
 
+            const calculatedTotal = displayedCriteria.filter(c => c.status === "Pass").length;
+            const score = stockData?.score;
+
             const newItem = {
                 ticker: symbol,
                 price: currentPrice,
@@ -105,6 +121,16 @@ const OverviewCard = ({ moatStatusLabel }) => {
         }
         return tickItem;
     };
+    const [chartHeight, setChartHeight] = useState(400); // Default height
+
+    useEffect(() => {
+        const handleResize = () => {
+            setChartHeight(window.innerWidth < 768 ? 300 : 400);
+        };
+        handleResize();
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // --- Score Logic ---
     // Recalculate criteria with overrides
@@ -286,30 +312,67 @@ const OverviewCard = ({ moatStatusLabel }) => {
                     </div>
                 </div>
                 <div className={styles.chartContainer}>
-                    <ResponsiveContainer width="100%" height={400}>
-                        <ComposedChart data={chartData}>
-                            <defs>
-                                <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
-                                    <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
-                                    <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
-                                </linearGradient>
-                            </defs>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                            <XAxis dataKey="date" stroke="#9CA3AF" tickFormatter={formatXAxis} minTickGap={30} tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                            <YAxis domain={['auto', 'auto']} stroke="#9CA3AF" tick={{ fontSize: 12, fill: '#9CA3AF' }} />
-                            <Tooltip
-                                contentStyle={{ backgroundColor: '#1F2937', border: 'none', color: '#fff' }}
-                                formatter={(value, name) => [`$${Number(value).toFixed(2)}`, name]}
-                            />
-                            <Legend />
-                            <Area type="monotone" dataKey="close" stroke="#3B82F6" fillOpacity={1} fill="url(#colorPrice)" name="Price" />
-                            {/* SMAs - Show on all timeframes - Order: 50, 100, 150, 200 */}
-                            <Line type="monotone" dataKey="SMA_50" stroke="#3B82F6" strokeDasharray="5 5" dot={false} name="50 SMA" strokeWidth={2} />
-                            <Line type="monotone" dataKey="SMA_100" stroke="#F59E0B" strokeDasharray="5 5" dot={false} name="100 SMA" strokeWidth={2} />
-                            <Line type="monotone" dataKey="SMA_150" stroke="#10B981" strokeDasharray="5 5" dot={false} name="150 SMA" strokeWidth={2} />
-                            <Line type="monotone" dataKey="SMA_200" stroke="#EF4444" strokeDasharray="5 5" dot={false} name="200 SMA" strokeWidth={2} />
-                        </ComposedChart>
-                    </ResponsiveContainer>
+                    {chartLoading || chartData.length === 0 ? (
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                            <p>
+                                {chartLoading ? 'Loading chart...' : 'Chart data not available.'}
+                            </p>
+                        </div>
+                    ) : (
+                        <div className={styles.chartWrapper}>
+                            <ResponsiveContainer width="100%" height={chartHeight}>
+                                <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -30, bottom: 0 }}>
+                                    <defs>
+                                        <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                                            <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.3} />
+                                            <stop offset="95%" stopColor="#3B82F6" stopOpacity={0} />
+                                        </linearGradient>
+                                    </defs>
+                                    <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                                    <XAxis
+                                        dataKey="date"
+                                        stroke={chartColors.text}
+                                        tickFormatter={formatXAxis}
+                                        minTickGap={30}
+                                        tick={{ fontSize: 10, fill: chartColors.text }}
+                                    />
+                                    <YAxis
+                                        domain={['auto', 'auto']}
+                                        stroke={chartColors.text}
+                                        tick={{ fontSize: 10, fill: chartColors.text }}
+
+                                    />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: chartColors.tooltipBg,
+                                            border: chartColors.tooltipBorder,
+                                            color: chartColors.tooltipColor,
+                                            borderRadius: '15px',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            fontSize: '12px',
+
+
+                                        }}
+                                        formatter={(value, name) => [`$${Number(value).toFixed(2)}`, name]}
+                                        itemStyle={{ margin: '0', padding: '0' }}
+                                        labelStyle={{
+                                            margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                            padding: '0',
+                                            fontWeight: 'bold' // Optional, to make the label stand out
+                                        }}
+                                    />
+
+                                    <Legend wrapperStyle={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center', justifyContent: 'center' }} />
+                                    <Area type="monotone" dataKey="close" stroke="#3B82F6" fillOpacity={1} fill="url(#colorPrice)" name="Price" />
+                                    {/* SMAs - Show on all timeframes - Order: 50, 100, 150, 200 */}
+                                    <Line type="monotone" dataKey="SMA_50" stroke="#3B82F6" strokeDasharray="5 5" dot={false} name="50 SMA" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="SMA_100" stroke="#F59E0B" strokeDasharray="5 5" dot={false} name="100 SMA" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="SMA_150" stroke="#10B981" strokeDasharray="5 5" dot={false} name="150 SMA" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="SMA_200" stroke="#EF4444" strokeDasharray="5 5" dot={false} name="200 SMA" strokeWidth={2} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

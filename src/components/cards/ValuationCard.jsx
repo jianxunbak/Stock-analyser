@@ -23,11 +23,14 @@ const ValuationCard = () => {
 
                 <div className={styles.section}>
                     <h4 className={styles.label}>Key Assumptions</h4>
-                    <ul className={styles.assumptionsList}>
+                    <div className={styles.assumptionsContainer}>
                         {valuation.assumptions && Object.entries(valuation.assumptions).map(([key, value]) => (
-                            <li key={key}>{key}: {value}</li>
+                            <div key={key} className={styles.assumptionRow}>
+                                <span className={styles.assumptionKey}>{key}</span>
+                                <span className={styles.assumptionValue}>{value}</span>
+                            </div>
                         ))}
-                    </ul>
+                    </div>
                 </div>
 
                 <div className={styles.section}>

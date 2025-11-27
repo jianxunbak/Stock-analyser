@@ -955,11 +955,11 @@ def get_stock_data(ticker: str):
         # 7. ROE 12-15% (>= 12%)
         roe_val = roe_ttm
         roe_pass = roe_val >= 0.12
-        score_criteria.append({"name": "ROE 12-15%", "status": "Pass" if roe_pass else "Fail", "value": f"{roe_val*100:.2f}%"})
+        score_criteria.append({"name": "ROE > 12-15%", "status": "Pass" if roe_pass else "Fail", "value": f"{roe_val*100:.2f}%"})
         
         # 8. ROIC 12-15% (>= 12%)
         roic_pass = roic >= 0.12
-        score_criteria.append({"name": "ROIC 12-15%", "status": "Pass" if roic_pass else "Fail", "value": f"{roic*100:.2f}%"})
+        score_criteria.append({"name": "ROIC > 12-15%", "status": "Pass" if roic_pass else "Fail", "value": f"{roic*100:.2f}%"})
         
         # 9. Revenue vs Receivables
         rev_ar_pass = False

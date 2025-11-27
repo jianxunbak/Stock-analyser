@@ -1,17 +1,18 @@
 .card {
     padding: 1.5rem;
-    background-color: #1f2937;
+    background-color: var(--bg-secondary);
     border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    color: #ffffff;
+    box-shadow: var(--card-shadow);
+    color: var(--text-primary);
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    border: 1px solid var(--border-color);
 }
 
 .loading {
     padding: 1.5rem;
-    background-color: #1f2937;
+    background-color: var(--bg-secondary);
     border-radius: 0.5rem;
     height: 16rem;
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -34,6 +35,7 @@
     line-height: 1.75rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+    color: var(--text-primary);
 }
 
 /* Top Zone: Score + Checklist */
@@ -59,7 +61,7 @@
 
 /* Score Card Styles */
 .scoreCard {
-    background-color: #111827;
+    background-color: var(--bg-primary);
     padding: 1.5rem;
     border-radius: 0.5rem;
     text-align: center;
@@ -69,11 +71,11 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-
+    border: 1px solid var(--border-color);
 }
 
 .scoreLabel {
-    color: #9ca3af;
+    color: var(--text-secondary);
     font-size: 0.875rem;
     margin-bottom: 0.5rem;
 }
@@ -82,13 +84,13 @@
     font-size: 3rem;
     line-height: 1;
     font-weight: 700;
-    color: #ffffff;
+    color: var(--text-primary);
     margin-bottom: 0.5rem;
 }
 
 .scoreMax {
     font-size: 1.25rem;
-    color: #6b7280;
+    color: var(--text-muted);
 }
 
 .scoreStatus {
@@ -123,7 +125,7 @@
 
 .checklistLabel {
     font-size: 0.875rem;
-    color: #d1d5db;
+    color: var(--text-primary);
     font-weight: 500;
 }
 
@@ -138,6 +140,7 @@
     font-size: 0.75rem;
     border-radius: 0.25rem;
     transition: all 150ms;
+    border: 1px solid transparent;
 }
 
 .buttonHighActive {
@@ -156,12 +159,13 @@
 }
 
 .buttonInactive {
-    background-color: #111827;
-    color: #9ca3af;
+    background-color: var(--bg-primary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
 }
 
 .buttonInactive:hover {
-    background-color: #4b5563;
+    background-color: var(--glass-bg);
 }
 
 /* Bottom Zone: Chart */
@@ -170,28 +174,55 @@
 }
 
 .chartContainer {
-    height: 480px;
-    /* Increased from 400px (120%) */
+    height: 300px;
+    /* Smaller for mobile */
     width: 100%;
-    background-color: #111827;
-    /* Darker bg for chart area optional */
-    padding: 1rem;
-    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+@media (min-width: 768px) {
+    .chartContainer {
+        height: 480px;
+        /* Desktop */
+    }
+}
+
+/* .activeComparisons:focus,
+.chartContainer:focus,
+.chartWrapper:focus,
+.chartContainer:focus-within,
+.chartContainer svg:focus,
+.chartContainer .recharts-surface:focus,
+.chartWrapper:focus-within {
+    outline: none;
+} */
+
+.chartContainer *:focus {
+    outline: none !important;
 }
 
 .chartWrapper {
     flex: 1;
     width: 100%;
+    /* height: 400px; */
+    /* width: 100%; */
+    height: 100%;
     min-height: 0;
+    outline: none;
 }
+
+
 
 .gradingNote {
     font-size: 0.8rem;
-    color: #9ca3af;
-    /* margin-top: 0.5rem; and margin-bottom: 1.5rem; are managed by the .scoreStack gap now */
+    color: var(--text-secondary);
     margin: 0;
     font-style: italic;
     box-sizing: border-box;
@@ -206,16 +237,13 @@
 }
 
 .tickerInput {
-    background-color: #374151;
-    border: 1px solid #4b5563;
-    color: white;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-primary);
     padding: 0.25rem 0.5rem;
-    /* Smaller padding */
     border-radius: 0.25rem;
     font-size: 0.75rem;
-    /* Smaller font */
     width: 120px;
-    /* Limit width */
 }
 
 .tickerInput:focus {
@@ -223,7 +251,6 @@
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
     box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
-
 }
 
 .addButton {
@@ -231,11 +258,9 @@
     color: white;
     border: none;
     padding: 0.25rem 0.75rem;
-    /* Smaller padding */
     border-radius: 0.25rem;
     cursor: pointer;
     font-size: 0.75rem;
-    /* Smaller font */
 }
 
 .addButton:hover {
@@ -248,6 +273,8 @@
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
+
+
 
 .comparisonTag {
     display: flex;
@@ -272,12 +299,7 @@
 
 .chartTitle {
     font-size: 0.875rem;
-    /* text-sm */
-    /* font-weight: 600; */
-    /* font-semibold */
-    color: #9ca3af;
-    /* text-gray-400 */
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
-    /* mb-2 */
     box-sizing: border-box;
 }

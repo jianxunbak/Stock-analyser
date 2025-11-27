@@ -1,23 +1,17 @@
 .card {
-
     padding: 1.5rem;
-    /* p-6 */
-    background-color: #1f2937;
-    /* bg-gray-800 */
+    background-color: var(--bg-secondary);
     border-radius: 0.5rem;
-    /* rounded-lg */
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    /* shadow-lg */
-    color: #ffffff;
-    /* text-white */
+    box-shadow: var(--card-shadow);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
 }
 
 .loading {
     padding: 1.5rem;
-    background-color: #1f2937;
+    background-color: var(--bg-secondary);
     border-radius: 0.5rem;
     height: 16rem;
-    /* h-64 */
     animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
@@ -35,82 +29,92 @@
 
 .title {
     font-size: 1.25rem;
-    /* text-xl */
     line-height: 1.75rem;
     font-weight: 700;
-    /* font-bold */
     margin-bottom: 1rem;
-    /* mb-4 */
+    color: var(--text-primary);
 }
 
 .metricContainer {
     margin-bottom: 1.5rem;
-    /* mb-6 */
 }
 
 .metricsGrid {
-    display: grid;
+    /* display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem;
-    /* gap-6 */
+    gap: 1.5rem; */
     margin-bottom: 2rem;
-    /* mb-8 */
+    flex-wrap: wrap;
 }
 
 .metricCard {
-    background-color: #111827;
+    background-color: var(--bg-primary);
     padding: 0.8rem 1rem;
     border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
 }
 
 .metricLabel {
-    color: #9ca3af;
-    /* text-gray-400 */
+    color: var(--text-secondary);
     font-size: 0.875rem;
-    /* text-sm */
     margin-top: 0;
     margin-bottom: 0.1rem;
-    /* mb-1 */
 }
-
 
 .metricValue {
     font-size: 1.5rem;
-    /* text-2xl */
     line-height: 2rem;
     font-weight: 700;
-    /* font-bold */
     margin: 0;
+    color: var(--text-primary);
 }
 
 .positive {
     color: #4ade80;
-    /* text-green-400 */
 }
 
 .negative {
     color: #f87171;
-    /* text-red-400 */
 }
 
 .chartContainer {
-    height: 400px;
+    height: 300px;
+    /* Smaller for mobile */
     width: 100%;
     margin-bottom: 2rem;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
+    background-color: var(--bg-primary);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+}
+
+.chartContainer *:focus {
+    outline: none !important;
+}
+
+@media (min-width: 768px) {
+    .chartContainer {
+        height: 400px;
+    }
+}
+
+.chartWrapper {
+    flex: 1;
+    width: 100%;
+    /* height: 400px; */
+    /* width: 100%; */
+    height: 100%;
+    min-height: 0;
+    outline: none;
 }
 
 .chartTitle {
     font-size: 0.875rem;
-    /* text-sm */
-    /* font-weight: 600; */
-    /* font-semibold */
-    color: #9ca3af;
-    /* text-gray-400 */
+    color: var(--text-secondary);
     margin-bottom: 0.5rem;
-    /* mb-2 */
 }
 
 .noData {
@@ -118,57 +122,43 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
-    /* text-gray-500 */
-    background-color: rgba(55, 65, 81, 0.3);
-    /* bg-gray-700/30 */
+    color: var(--text-muted);
+    background-color: var(--bg-primary);
     border-radius: 0.25rem;
-    /* rounded */
 }
 
 .tableTitle {
     font-size: 0.875rem;
-    /* text-sm */
     font-weight: 600;
-    /* font-semibold */
-    color: #9ca3af;
-    /* text-gray-400 */
+    color: var(--text-secondary);
     margin-bottom: 0.75rem;
-    /* mb-3 */
 }
 
 .tableContainer {
     overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
 }
 
 .table {
     width: 100%;
     font-size: 0.875rem;
-    /* text-sm */
     text-align: left;
-    color: #d1d5db;
-    /* text-gray-300 */
+    color: var(--text-primary);
+    border-collapse: collapse;
 }
 
 .tableHead {
-    color: #6b7280;
-    /* text-gray-500 */
-    background-color: #374151;
-    /* bg-gray-700 */
+    color: var(--text-secondary);
+    background-color: var(--bg-primary);
 }
 
 .tableCell {
-    padding-left: 0.75rem;
-    /* px-3 */
-    padding-right: 0.75rem;
-    padding-top: 0.5rem;
-    /* py-2 */
-    padding-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
 }
 
 .tableRow {
-    border-bottom: 1px solid #374151;
-    /* border-gray-700 */
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tableRow:last-child {
@@ -176,26 +166,16 @@
 }
 
 .tableRow:hover {
-    background-color: rgba(55, 65, 81, 0.5);
-    /* hover:bg-gray-700/50 */
+    background-color: var(--glass-bg);
 }
 
 .periodCell {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
     font-weight: 500;
-    /* font-medium */
-    color: #e5e7eb;
-    /* text-gray-200 */
+    color: var(--text-primary);
 }
 
 .valueCell {
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding: 0.5rem 0.75rem;
     color: #93c5fd;
-    /* text-blue-300 */
 }

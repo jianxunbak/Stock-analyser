@@ -57,8 +57,10 @@ const SupportResistanceCard = () => {
                                     {note && <span className={styles.actionNote}>{note}</span>}
                                 </div>
                             </div>
+
                             <div className={styles.reasonText}>
                                 {level.reason}
+                                <br></br>
                                 {level.score >= 6 && (
                                     <span className={styles.strongLabel}>★ Strong</span>
                                 )}
@@ -67,7 +69,7 @@ const SupportResistanceCard = () => {
                     );
                 })}
             </div>
-        </div>
+        </div >
     );
 };
 

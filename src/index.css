@@ -5,15 +5,44 @@
   line-height: 1.5;
   font-weight: 400;
 
+  /* Dark Mode Defaults */
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --border-color: #374151;
+  --input-bg: #1f2937;
+  --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --glass-bg: rgba(255, 255, 255, 0.1);
+  --glass-border: rgba(255, 255, 255, 0.2);
 
   color-scheme: light dark;
-  color: rgba(0, 0, 0, 0.87);
-  background-color: #111827;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+[data-theme="light"] {
+  --bg-primary: #f3f4f6;
+  /* Light gray background */
+  --bg-secondary: #ffffff;
+  /* White cards */
+  --text-primary: #111827;
+  /* Dark text */
+  --text-secondary: #4b5563;
+  /* Gray text */
+  --text-muted: #9ca3af;
+  --border-color: #e5e7eb;
+  --input-bg: #ffffff;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  /* More opaque for light mode */
+  --glass-border: rgba(0, 0, 0, 0.1);
 }
 
 a {
@@ -28,11 +57,11 @@ a:hover {
 
 body {
   margin: 0;
-  /* display: flex;
-  place-items: center; */
   min-width: 320px;
   min-height: 100vh;
-  background-color: #111827
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1 {
@@ -59,19 +88,4 @@ button:hover {
 button:focus,
 button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-
-  a:hover {
-    color: #747bff;
-  }
-
-  button {
-    background-color: #f9f9f9;
-  }
 }

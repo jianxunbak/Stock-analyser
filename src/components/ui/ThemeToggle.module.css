@@ -1,0 +1,42 @@
+.toggleButton {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.4rem;
+    border-radius: 10px;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 2rem;
+    width: auto;
+}
+
+.toggleButton:focus {
+    outline: none;
+}
+
+[data-theme="light"] .toggleButton {
+    background: white;
+    border: 1px solid #e5e7eb;
+    color: #1f2937;
+}
+
+.toggleButton:hover {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    border-color: #60a5fa;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+}
+
+[data-theme="light"] .toggleButton:hover {
+    background: #f3f4f6;
+    border-color: #3b82f6;
+}
+
+.icon {
+    color: inherit;
+}
