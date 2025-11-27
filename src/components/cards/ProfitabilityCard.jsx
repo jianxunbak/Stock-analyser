@@ -19,7 +19,7 @@ const ProfitabilityCard = () => {
             setChartHeight(window.innerWidth < 768 ? 300 : 400);
 
             // Keep the bar size logic here too
-            setBarSize(window.innerWidth < 768 ? 2 : 12);
+            setBarSize(window.innerWidth < 768 ? 2 : 30);
         };
         handleResize();
         window.addEventListener('resize', handleResize);
@@ -124,8 +124,8 @@ const ProfitabilityCard = () => {
                                     paddingTop: 10,
                                     paddingBottom: 10,
                                 }} />
-                                <Bar dataKey="revenue" name="Total Revenue" fill="#3B82F6" barSize={barSize < 20 ? 2 : 12} />
-                                <Bar dataKey="receivables" name="Accounts Receivable" fill="#EF4444" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="revenue" name="Total Revenue" fill="#3B82F6" barSize={barSize} />
+                                <Bar dataKey="receivables" name="Accounts Receivable" fill="#EF4444" barSize={barSize} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>
@@ -172,7 +172,7 @@ const ProfitabilityCard = () => {
                                     paddingTop: 10,
                                     paddingBottom: 10,
                                 }} />
-                                <Bar dataKey="value" name="Cash Conversion Cycle" fill="#10B981" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="value" name="Cash Conversion Cycle" fill="#10B981" barSize={barSize} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>

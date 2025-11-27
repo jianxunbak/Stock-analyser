@@ -17,7 +17,7 @@ const GrowthCard = () => {
             setChartHeight(window.innerWidth < 768 ? 300 : 400);
 
             // Keep the bar size logic here too
-            setBarSize(window.innerWidth < 768 ? 2 : 12);
+            setBarSize(window.innerWidth < 768 ? 2 : 30);
         };
         handleResize();
         window.addEventListener('resize', handleResize);
@@ -158,10 +158,10 @@ const GrowthCard = () => {
                                     paddingTop: 10,
                                     paddingBottom: 10,
                                 }} />
-                                <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize < 20 ? 2 : 12} />
-                                <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize < 20 ? 2 : 12} />
-                                <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={barSize < 20 ? 2 : 12} />
-                                <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize} />
+                                <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize} />
+                                <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={barSize} />
+                                <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={barSize} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>
@@ -208,8 +208,8 @@ const GrowthCard = () => {
                                     paddingTop: 10,
                                     paddingBottom: 10,
                                 }} />
-                                <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize < 20 ? 2 : 12} />
-                                <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize < 20 ? 2 : 12} />
+                                <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize} />
+                                <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize} />
                             </ComposedChart>
                         </ResponsiveContainer>
                     </div>
