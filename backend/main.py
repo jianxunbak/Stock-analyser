@@ -3,6 +3,11 @@ from fastapi.middleware.cors import CORSMiddleware
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import os
+
+# Set cache directory for Vercel (read-only file system fix)
+if os.environ.get('VERCEL'):
+    os.environ['XDG_CACHE_HOME'] = '/tmp'
 
 app = FastAPI()
 
