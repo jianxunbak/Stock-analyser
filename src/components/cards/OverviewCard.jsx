@@ -167,10 +167,96 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
     }, [stockData, moatStatusLabel, isMoatEvaluating]);
 
     const calculatedTotal = useMemo(() => {
-        return displayedCriteria.filter(c => c.status === "Pass").length;
+        // If the backend provides a weighted score, we should ideally use that.
+        // However, since we are overriding the "Economic Moat" status here in the frontend,
+        // we need to recalculate the weighted score locally to reflect that change.
+
+        // Define weights locally to match backend (simplified lookup map)
+        // Note: This duplicates logic, but is necessary for dynamic frontend updates without a new API call.
+        // Ideally, we would fetch the weight map from the API, but hardcoding for now based on the request.
+
+        let total = 0;
+
+        // Helper to determine scenario (simplified check based on criteria presence)
+        const hasCCC = displayedCriteria.some(c => c.name === "CCC Stable/Reducing");
+        const hasGearing = displayedCriteria.some(c => c.name === "Gearing Ratio < 45%");
+
+        const getWeight = (name) => {
+            // Normalize name
+            let key = name;
+            if (name.includes("Historical Trend")) key = "Historical Trend (20Y)";
+
+            // Scenario 2: REITs
+            if (hasGearing) {
+                const map = {
+                    "Historical Trend (20Y)": 10,
+                    "Net Income Increasing": 3, "Operating Income Increasing": 3,
+                    "Operating Cash Flow Increasing": 3,
+                    "Revenue Increasing": 3,
+                    "Gross Margin Stable/Increasing": 5,
+                    "Net Margin Stable/Increasing": 5,
+                    "ROE > 12-15%": 10,
+                    "ROIC > 12-15%": 15,
+                    "Revenue > AR or Growing Faster": 4,
+                    "Economic Moat": 5,
+                    "Debt/EBITDA < 3": 15,
+                    "Debt Servicing Ratio < 30%": 15,
+                    "Current Ratio > 1.5": 5,
+                    "Gearing Ratio < 45%": 5
+                };
+                return map[key] || 0;
+            }
+
+            // Scenario 1: CCC Applicable
+            if (hasCCC) {
+                const map = {
+                    "Historical Trend (20Y)": 15,
+                    "Net Income Increasing": 5, "Operating Income Increasing": 5,
+                    "Operating Cash Flow Increasing": 5,
+                    "Revenue Increasing": 10,
+                    "Gross Margin Stable/Increasing": 10,
+                    "Net Margin Stable/Increasing": 5,
+                    "ROE > 12-15%": 5,
+                    "ROIC > 12-15%": 15,
+                    "Revenue > AR or Growing Faster": 1,
+                    "CCC Stable/Reducing": 3,
+                    "Economic Moat": 20,
+                    "Debt/EBITDA < 3": 5,
+                    "Debt Servicing Ratio < 30%": 1,
+                    "Current Ratio > 1.5": 5
+                };
+                return map[key] || 0;
+            }
+
+            // Scenario 3: Standard
+            const map = {
+                "Historical Trend (20Y)": 5,
+                "Net Income Increasing": 10, "Operating Income Increasing": 10,
+                "Operating Cash Flow Increasing": 10,
+                "Revenue Increasing": 5,
+                "Gross Margin Stable/Increasing": 10,
+                "Net Margin Stable/Increasing": 5,
+                "ROE > 12-15%": 15,
+                "ROIC > 12-15%": 15,
+                "Revenue > AR or Growing Faster": 5,
+                "Economic Moat": 20,
+                "Debt/EBITDA < 3": 5,
+                "Debt Servicing Ratio < 30%": 2,
+                "Current Ratio > 1.5": 3
+            };
+            return map[key] || 0;
+        };
+
+        displayedCriteria.forEach(c => {
+            if (c.status === "Pass") {
+                total += getWeight(c.name);
+            }
+        });
+
+        return total;
     }, [displayedCriteria]);
 
-    const calculatedScoreColor = calculatedTotal >= 7 ? styles.scoreGreen : calculatedTotal >= 4 ? styles.scoreYellow : styles.scoreRed;
+    const calculatedScoreColor = calculatedTotal >= 70 ? styles.scoreGreen : calculatedTotal >= 40 ? styles.scoreYellow : styles.scoreRed;
 
     // Early returns AFTER all hooks
     if (loading) return <div className={styles.loading}></div>;
@@ -244,7 +330,7 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                     <div className={styles.scoreHeader}>
                         <h3 className={styles.scoreTitle}>Stock Health Score</h3>
                         <div className={`${styles.totalScore} ${calculatedScoreColor}`}>
-                            {score?.max ? ((calculatedTotal / score.max) * 100).toFixed(0) : 0}%
+                            {calculatedTotal}<span className={styles.scoreMax}>/100</span>
                         </div>
                     </div>
                     <div className={styles.criteriaList}>

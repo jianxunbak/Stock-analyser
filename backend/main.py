@@ -1147,8 +1147,101 @@ def get_stock_data(ticker: str):
 
 
 
-        total_score = sum(1 for c in score_criteria if c["status"] == "Pass")
-        max_score = len(score_criteria)
+        # --- Weighted Scoring Logic ---
+        
+        # Define weights for different scenarios
+        # Scenario 1: CCC Applicable (Physical Goods)
+        weights_ccc = {
+            "Historical Trend (20Y)": 15,
+            "Net Income Increasing": 5, "Operating Income Increasing": 5, # Combined logic handles which one is present
+            "Operating Cash Flow Increasing": 5,
+            "Revenue Increasing": 10,
+            "Gross Margin Stable/Increasing": 10,
+            "Net Margin Stable/Increasing": 5,
+            "ROE > 12-15%": 5,
+            "ROIC > 12-15%": 15,
+            "Revenue > AR or Growing Faster": 1,
+            "CCC Stable/Reducing": 3,
+            "Economic Moat": 20,
+            "Debt/EBITDA < 3": 5,
+            "Debt Servicing Ratio < 30%": 1,
+            "Current Ratio > 1.5": 5
+        }
+
+        # Scenario 2: REITs (Gearing Ratio)
+        weights_reit = {
+            "Historical Trend (20Y)": 10,
+            "Net Income Increasing": 3, "Operating Income Increasing": 3,
+            "Operating Cash Flow Increasing": 3,
+            "Revenue Increasing": 3,
+            "Gross Margin Stable/Increasing": 5,
+            "Net Margin Stable/Increasing": 5,
+            "ROE > 12-15%": 10,
+            "ROIC > 12-15%": 15,
+            "Revenue > AR or Growing Faster": 4,
+            "Economic Moat": 5,
+            "Debt/EBITDA < 3": 15,
+            "Debt Servicing Ratio < 30%": 15,
+            "Current Ratio > 1.5": 5,
+            "Gearing Ratio < 45%": 5
+        }
+
+        # Scenario 3: Standard (No CCC, No Gearing)
+        weights_standard = {
+            "Historical Trend (20Y)": 5,
+            "Net Income Increasing": 10, "Operating Income Increasing": 10,
+            "Operating Cash Flow Increasing": 10,
+            "Revenue Increasing": 5,
+            "Gross Margin Stable/Increasing": 10,
+            "Net Margin Stable/Increasing": 5,
+            "ROE > 12-15%": 15,
+            "ROIC > 12-15%": 15,
+            "Revenue > AR or Growing Faster": 5,
+            "Economic Moat": 20,
+            "Debt/EBITDA < 3": 5,
+            "Debt Servicing Ratio < 30%": 2,
+            "Current Ratio > 1.5": 3
+        }
+
+        # Determine which weight set to use
+        current_weights = {}
+        if is_reit:
+            current_weights = weights_reit
+        elif has_physical_goods: # CCC Applicable
+            current_weights = weights_ccc
+        else:
+            current_weights = weights_standard
+
+        total_score = 0
+        max_score = 0 # Should sum to 100 ideally, but we calculate dynamically to be safe
+
+        for criterion in score_criteria:
+            name = criterion["name"]
+            # Handle partial matches for combined criteria names if necessary, 
+            # but here we map exact names or simplified keys.
+            
+            # Normalize name for lookup (remove specific values like "(20Y) increasing")
+            lookup_name = name
+            if "Historical Trend" in name: lookup_name = "Historical Trend (20Y)"
+            if "Net Income Increasing" in name: lookup_name = "Net Income Increasing"
+            if "Operating Income Increasing" in name: lookup_name = "Operating Income Increasing"
+            
+            weight = current_weights.get(lookup_name, 0)
+            
+            # Add to max score
+            max_score += weight
+            
+            # Add to total score if passed
+            if criterion["status"] == "Pass":
+                total_score += weight
+
+        # Normalize to 100 if max_score is not 100 (just in case)
+        # But based on user request, these are percentages, so max_score should be ~100.
+        # We will return the raw weighted score.
+        
+        # Update the criteria list to include weights for frontend display if needed (optional)
+        # for c in score_criteria:
+        #     c["weight"] = current_weights.get(c["name"], 0)
 
         # --- Support Resistance Calculation ---
         support_resistance_data = {}
