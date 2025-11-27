@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useStockData } from '../../hooks/useStockData';
+import { useAuth } from '../../context/AuthContext';
 import OverviewCard from '../cards/OverviewCard';
 import GrowthCard from '../cards/GrowthCard';
 import MoatCard from '../cards/MoatCard';
@@ -25,6 +26,7 @@ const DashboardPage = () => {
     const [showWatchlist, setShowWatchlist] = useState(false);
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { currentUser, logout, loading: authLoading } = useAuth();
 
     // Persistence: Load ticker from localStorage or URL on mount
     useEffect(() => {
@@ -40,6 +42,13 @@ const DashboardPage = () => {
             loadStockData(savedTicker);
         }
     }, []); // Only run on mount
+
+    // Auth Protection
+    useEffect(() => {
+        if (!authLoading && !currentUser) {
+            navigate('/');
+        }
+    }, [authLoading, currentUser, navigate]);
 
     // Error Handling: Show Modal on error
     useEffect(() => {
@@ -68,6 +77,17 @@ const DashboardPage = () => {
         setShowErrorModal(false);
     };
 
+    const handleLogout = async () => {
+        try {
+            await logout();
+            navigate('/');
+        } catch (error) {
+            console.error("Failed to log out", error);
+        }
+    };
+
+    if (authLoading) return <div>Loading...</div>; // Or a spinner
+
     return (
         <div className={styles.container}>
             <div className={styles.wrapper}>
@@ -87,6 +107,29 @@ const DashboardPage = () => {
                         >
                             <Star size={16} className={styles.starIcon} />
                         </button>
+
+                        {currentUser && (
+                            <>
+                                <span style={{ color: 'white', fontWeight: '500', marginRight: '1rem' }}>
+                                    {currentUser.displayName}
+                                </span>
+                                <button
+                                    onClick={handleLogout}
+                                    style={{
+                                        background: 'transparent',
+                                        border: '1px solid rgba(255,255,255,0.2)',
+                                        color: 'white',
+                                        padding: '0.5rem 1rem',
+                                        borderRadius: '0.5rem',
+                                        cursor: 'pointer',
+                                        marginRight: '1rem'
+                                    }}
+                                >
+                                    Log Out
+                                </button>
+                            </>
+                        )}
+
                         <div className={styles.searchContainer}>
                             <input
                                 type="text"
@@ -127,26 +170,28 @@ const DashboardPage = () => {
 
                 <div className={styles.grid}>
                     <div className={styles.colSpan3} style={{ position: 'relative' }}>
-                        <div
-                            onClick={() => navigate('/')}
-                            style={{
-                                position: 'absolute',
-                                top: '-2rem',
-                                left: '0rem',
-                                zIndex: 20,
-                                cursor: 'pointer',
-                                color: '#9ca3af',
-                                padding: '4px',
-                                borderRadius: '50%',
-                                backgroundColor: 'rgba(0,0,0,0.4)',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                            }}
-                            className="hover:text-white transition-colors"
-                        >
-                            <ArrowLeft size={20} />
-                        </div>
+                        {!loading && (
+                            <div
+                                onClick={() => navigate('/')}
+                                style={{
+                                    position: 'absolute',
+                                    top: '-2rem',
+                                    left: '0rem',
+                                    zIndex: 20,
+                                    cursor: 'pointer',
+                                    color: '#9ca3af',
+                                    padding: '4px',
+                                    borderRadius: '50%',
+                                    backgroundColor: 'rgba(0,0,0,0.4)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}
+                                className="hover:text-white transition-colors"
+                            >
+                                <ArrowLeft size={20} />
+                            </div>
+                        )}
                         <OverviewCard moatStatusLabel={moatStatusLabel} />
                     </div>
                     <div className={styles.colSpan3}>
