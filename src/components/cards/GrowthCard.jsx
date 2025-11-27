@@ -13,15 +13,6 @@ const GrowthCard = () => {
 
     React.useEffect(() => {
         const handleResize = () => {
-            setBarSize(window.innerWidth < 768 ? 5 : 20);
-        };
-        handleResize(); // Set initial
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
-
-    React.useEffect(() => {
-        const handleResize = () => {
             // Use 400px for desktop (>= 768px), 300px for mobile (< 768px)
             setChartHeight(window.innerWidth < 768 ? 300 : 400);
 

@@ -362,7 +362,7 @@ const OverviewCard = ({ moatStatusLabel }) => {
                                         }}
                                     />
 
-                                    <Legend wrapperStyle={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center', justifyContent: 'center' }} />
+                                    <Legend wrapperStyle={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center' }} />
                                     <Area type="monotone" dataKey="close" stroke="#3B82F6" fillOpacity={1} fill="url(#colorPrice)" name="Price" />
                                     {/* SMAs - Show on all timeframes - Order: 50, 100, 150, 200 */}
                                     <Line type="monotone" dataKey="SMA_50" stroke="#3B82F6" strokeDasharray="5 5" dot={false} name="50 SMA" strokeWidth={2} />
