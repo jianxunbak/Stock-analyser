@@ -1,4 +1,17 @@
 {
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/static-build",
+            "config": {
+                "outputDirectory": "dist"
+            }
+        },
+        {
+            "src": "backend/main.py",
+            "use": "@vercel/python"
+        }
+    ],
     "rewrites": [
         {
             "source": "/api/(.*)",
