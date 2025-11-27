@@ -297,7 +297,7 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
                         )}
                     </div>
 
-                    <p className={styles.gradingNote}>Graded by Gemini AI.</p>
+                    {/* <p className={styles.gradingNote}>Graded by Gemini AI.</p> */}
                 </div>
 
                 {/* Zone 2: Interactive Checklist */}
