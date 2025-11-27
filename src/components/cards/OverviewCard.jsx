@@ -8,7 +8,7 @@ import { ChevronDown, Star } from 'lucide-react';
 import axios from 'axios';
 import { useTheme } from '../../context/ThemeContext';
 
-const OverviewCard = ({ moatStatusLabel }) => {
+const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
     const { stockData, loading } = useStockData();
     const { theme } = useTheme();
     const [timeframe, setTimeframe] = useState('1Y');
@@ -138,17 +138,26 @@ const OverviewCard = ({ moatStatusLabel }) => {
         const score = stockData?.score;
         if (!score?.criteria) return [];
         return score.criteria.map(c => {
-            if (c.name === "Economic Moat" && moatStatusLabel) {
-                const isPass = moatStatusLabel === "Wide Moat" || moatStatusLabel === "Narrow Moat";
-                return {
-                    ...c,
-                    status: isPass ? "Pass" : "Fail",
-                    value: moatStatusLabel
-                };
+            if (c.name === "Economic Moat") {
+                if (isMoatEvaluating) {
+                    return {
+                        ...c,
+                        status: "Analyzing...",
+                        value: "Pending"
+                    };
+                }
+                if (moatStatusLabel) {
+                    const isPass = moatStatusLabel === "Wide Moat" || moatStatusLabel === "Narrow Moat";
+                    return {
+                        ...c,
+                        status: isPass ? "Pass" : "Fail",
+                        value: moatStatusLabel
+                    };
+                }
             }
             return c;
         });
-    }, [stockData, moatStatusLabel]);
+    }, [stockData, moatStatusLabel, isMoatEvaluating]);
 
     const calculatedTotal = useMemo(() => {
         return displayedCriteria.filter(c => c.status === "Pass").length;
@@ -235,7 +244,7 @@ const OverviewCard = ({ moatStatusLabel }) => {
                         {displayedCriteria.map((c, idx) => (
                             <div key={idx} className={styles.criteriaItem}>
                                 <span className={styles.criteriaName}>{c.name}</span>
-                                <span className={`${styles.criteriaStatus} ${c.status === 'Pass' ? styles.pass : styles.fail}`}>
+                                <span className={`${styles.criteriaStatus} ${c.status === 'Pass' ? styles.pass : c.status === 'Analyzing...' ? styles.pending : styles.fail}`}>
                                     {c.status}
                                 </span>
                             </div>
@@ -365,7 +374,7 @@ const OverviewCard = ({ moatStatusLabel }) => {
                                     <Legend wrapperStyle={{ width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center' }} />
                                     <Area type="monotone" dataKey="close" stroke="#3B82F6" fillOpacity={1} fill="url(#colorPrice)" name="Price" />
                                     {/* SMAs - Show on all timeframes - Order: 50, 100, 150, 200 */}
-                                    <Line type="monotone" dataKey="SMA_50" stroke="#3B82F6" strokeDasharray="5 5" dot={false} name="50 SMA" strokeWidth={2} />
+                                    <Line type="monotone" dataKey="SMA_50" stroke="#3B82F6" strokeDasharray="5 5" dot={false} name="50 SMA" strokeWidth={2} />np
                                     <Line type="monotone" dataKey="SMA_100" stroke="#F59E0B" strokeDasharray="5 5" dot={false} name="100 SMA" strokeWidth={2} />
                                     <Line type="monotone" dataKey="SMA_150" stroke="#10B981" strokeDasharray="5 5" dot={false} name="150 SMA" strokeWidth={2} />
                                     <Line type="monotone" dataKey="SMA_200" stroke="#EF4444" strokeDasharray="5 5" dot={false} name="200 SMA" strokeWidth={2} />

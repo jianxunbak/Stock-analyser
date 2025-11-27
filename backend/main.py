@@ -933,17 +933,23 @@ def get_stock_data(ticker: str):
                 
             return False
 
-        # 1. Net Income
+        # 1. Net Income / Operating Income (Conditional)
         ni_pass = check_trend(net_income_series, "increasing")
-        score_criteria.append({"name": "Net Income Increasing", "status": "Pass" if ni_pass else "Fail", "value": "Pass" if ni_pass else "Fail"})
+        
+        if ni_pass:
+            score_criteria.append({"name": "Net Income Increasing", "status": "Pass", "value": "Pass"})
+        else:
+            # If Net Income fails, check Operating Income
+            oi_pass = check_trend(op_income_series, "increasing")
+            if oi_pass:
+                score_criteria.append({"name": "Operating Income Increasing", "status": "Pass", "value": "Pass"})
+            else:
+                # Both failed, default to showing Net Income failure
+                score_criteria.append({"name": "Net Income Increasing", "status": "Fail", "value": "Fail"})
         
         # 2. Operating Cash Flow
         ocf_pass = check_trend(op_cash_flow_series, "increasing")
         score_criteria.append({"name": "Operating Cash Flow Increasing", "status": "Pass" if ocf_pass else "Fail", "value": "Pass" if ocf_pass else "Fail"})
-        
-        # 3. Operating Income
-        oi_pass = check_trend(op_income_series, "increasing")
-        score_criteria.append({"name": "Operating Income Increasing", "status": "Pass" if oi_pass else "Fail", "value": "Pass" if oi_pass else "Fail"})
 
         # 4. Revenue
         rev_pass = check_trend(revenue_series, "increasing")

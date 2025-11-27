@@ -21,9 +21,10 @@ import styles from './DashboardPage.module.css';
 // ...
 
 const DashboardPage = () => {
-    const { loadStockData, error, loading } = useStockData();
+    const { stockData, loadStockData, error, loading } = useStockData();
     const [ticker, setTicker] = useState('');
     const [moatStatusLabel, setMoatStatusLabel] = useState(null);
+    const [isMoatEvaluating, setIsMoatEvaluating] = useState(false);
     const [showErrorModal, setShowErrorModal] = useState(false);
     const [showWatchlist, setShowWatchlist] = useState(false);
     const [showProfileModal, setShowProfileModal] = useState(false);
@@ -256,7 +257,7 @@ const DashboardPage = () => {
                                 <ArrowLeft size={20} />
                             </div>
                         )}
-                        <OverviewCard moatStatusLabel={moatStatusLabel} />
+                        <OverviewCard moatStatusLabel={moatStatusLabel} isMoatEvaluating={isMoatEvaluating} />
                     </div>
                     <div className={styles.colSpan3}>
                         <GrowthCard />
@@ -265,7 +266,11 @@ const DashboardPage = () => {
                         <ProfitabilityCard />
                     </div>
                     <div className={styles.colSpan3}>
-                        <MoatCard onMoatStatusChange={setMoatStatusLabel} />
+                        <MoatCard
+                            key={stockData?.overview?.symbol || 'moat-card'}
+                            onMoatStatusChange={setMoatStatusLabel}
+                            onIsEvaluatingChange={setIsMoatEvaluating}
+                        />
                     </div>
                     <div className={styles.colSpan1}>
                         <DebtCard />

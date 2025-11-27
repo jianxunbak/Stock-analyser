@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useStockData } from '../../hooks/useStockData';
+import { evaluateMoat } from '../../services/gemini';
+import { Sparkles, Loader2 } from 'lucide-react';
 import {
     Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer,
     AreaChart, Area, CartesianGrid, XAxis, YAxis, Tooltip
@@ -8,10 +10,61 @@ import Modal from '../ui/Modal';
 import styles from './MoatCard.module.css';
 import { useTheme } from '../../context/ThemeContext';
 
-const MoatCard = ({ onMoatStatusChange }) => {
+const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
     const { stockData, loading } = useStockData();
     const { theme } = useTheme();
     const [chartHeight, setChartHeight] = React.useState(300);
+    const prevMoatStatusLabel = React.useRef();
+    const lastEvaluatedSymbol = React.useRef(null);
+    const [comparisonTicker, setComparisonTicker] = useState('');
+    const [comparisonStocks, setComparisonStocks] = useState([]);
+    const [error, setError] = useState(null);
+    const [errorTitle, setErrorTitle] = useState('Error');
+    const [showErrorModal, setShowErrorModal] = useState(false);
+    const [isEvaluating, setIsEvaluating] = useState(false);
+
+    const handleAiEvaluation = async () => {
+        if (!stockData?.overview?.symbol) return;
+
+        setIsEvaluating(true);
+        if (onIsEvaluatingChange) onIsEvaluatingChange(true);
+
+        try {
+            const result = await evaluateMoat(stockData.overview.symbol);
+
+            console.log("Gemini Result:", result); // Debug log
+
+            // Map Gemini response to our score state
+            // Gemini returns "High", "Low", "None"
+            const mapValue = (val) => {
+                const v = val?.toString().toLowerCase().trim() || '';
+                if (v === 'high') return 1;
+                if (v === 'low') return 0.5;
+                return 0;
+            };
+
+            const newScores = {
+                brand: mapValue(result.brandMonopoly),
+                barriers: mapValue(result.highBarrierToEntry),
+                scale: mapValue(result.economyOfScale),
+                network: mapValue(result.networkEffect),
+                switching: mapValue(result.highSwitchingCost)
+            };
+
+            console.log("Mapped Scores:", newScores); // Debug log
+            setScores(newScores);
+            setAiDescription(result.description || '');
+            lastEvaluatedSymbol.current = stockData.overview.symbol;
+        } catch (err) {
+            console.error("AI Evaluation failed:", err);
+            setError("Failed to evaluate with AI. Please try again.");
+            setErrorTitle("AI Evaluation Error");
+            setShowErrorModal(true);
+        } finally {
+            setIsEvaluating(false);
+            if (onIsEvaluatingChange) onIsEvaluatingChange(false);
+        }
+    };
 
     React.useEffect(() => {
         const handleResize = () => {
@@ -22,6 +75,29 @@ const MoatCard = ({ onMoatStatusChange }) => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
+
+    React.useEffect(() => {
+        const symbol = stockData?.overview?.symbol;
+
+        // 1. Skip if no symbol, still loading stock data, or AI is already running.
+        if (!symbol || loading || isEvaluating) {
+            return;
+        }
+
+        // 2. Check if the current symbol is different from the last one evaluated.
+        // Use the explicit check to ensure we run for a new symbol.
+        const hasAlreadyEvaluated = symbol === lastEvaluatedSymbol.current;
+
+        // 3. Only run if we haven't processed this symbol yet.
+        if (!hasAlreadyEvaluated) {
+            // Run the async function
+            handleAiEvaluation();
+
+            // 🛑 IMPORTANT: DO NOT SET THE REF HERE. 
+            // Set the ref *only after* the API call succeeds to prevent skipping the next attempt if the first fails.
+        }
+
+    }, [stockData?.overview?.symbol, loading, isEvaluating]);
 
     // Define chart colors based on theme
     const chartColors = useMemo(() => {
@@ -44,6 +120,12 @@ const MoatCard = ({ onMoatStatusChange }) => {
         network: 0,
         switching: 0
     });
+    const [aiDescription, setAiDescription] = useState('');
+
+    // Comparison & Error State
+
+
+
 
     const categories = [
         { id: 'brand', label: 'Brand Monopoly' },
@@ -70,7 +152,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
         return { label: "Wide Moat", color: styles.statusGreen };
     }, [totalScore]);
 
-    const prevMoatStatusLabel = React.useRef();
+
 
     // Notify parent of status change
     React.useEffect(() => {
@@ -102,10 +184,6 @@ const MoatCard = ({ onMoatStatusChange }) => {
     }, [history]);
 
     // Comparison Logic
-    const [comparisonTicker, setComparisonTicker] = useState('');
-    const [comparisonStocks, setComparisonStocks] = useState([]);
-    const [error, setError] = useState(null);
-    const [showErrorModal, setShowErrorModal] = useState(false);
 
     const handleAddComparison = async () => {
         if (!comparisonTicker) return;
@@ -118,6 +196,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
 
             if (!historyData || historyData.length === 0) {
                 setError('No data found for this ticker');
+                setErrorTitle("Comparison Error");
                 setShowErrorModal(true);
                 return;
             }
@@ -129,6 +208,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
 
             if (filtered.length === 0) {
                 setError('Insufficient data for this ticker');
+                setErrorTitle("Comparison Error");
                 setShowErrorModal(true);
                 return;
             }
@@ -148,6 +228,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
         } catch (e) {
             console.error("Error adding comparison stock", e);
             setError('Error adding stock. Please check the ticker.');
+            setErrorTitle("Comparison Error");
             setShowErrorModal(true);
         }
     };
@@ -191,11 +272,28 @@ const MoatCard = ({ onMoatStatusChange }) => {
                 {/* Zone 1: Total Moat Score */}
                 <div className={styles.scoreSection}>
                     <div className={styles.scoreCard}>
-                        <p className={styles.scoreLabel}>Total Moat Score</p>
-                        <div className={`${styles.scoreValue} ${moatStatus.color}`}>{totalScore} <span className={styles.scoreMax}>/ 5</span></div>
-                        <p className={`${styles.scoreStatus} ${moatStatus.color}`}>{moatStatus.label}</p>
+
+                        <Sparkles size={16} className={styles.aiIcon} />
+
+                        {/* <p className={styles.scoreLabel}>Total Moat Score</p> */}
+                        {isEvaluating ? (
+                            <div className={styles.evaluatingText}>
+                                <Loader2 className={styles.spin} size={16} />
+                                <span>AI Analyzing Moat...</span>
+                            </div>
+                        ) : aiDescription && (
+                            <>
+                                <div className={styles.score}>
+                                    <div className={`${styles.scoreValue} ${moatStatus.color}`}>{totalScore} <span className={styles.scoreMax}>/ 5</span></div>
+                                    <p className={`${styles.scoreStatus} ${moatStatus.color}`}>{moatStatus.label}</p>
+                                </div>
+
+                                <p className={styles.description}>{aiDescription}</p>
+                            </>
+                        )}
                     </div>
-                    <p className={styles.gradingNote}>Please grade the company based on the criterias on the right (High, Low, None).</p>
+
+                    <p className={styles.gradingNote}>Graded by Gemini AI.</p>
                 </div>
 
                 {/* Zone 2: Interactive Checklist */}
@@ -229,6 +327,7 @@ const MoatCard = ({ onMoatStatusChange }) => {
                     </div>
                 </div>
             </div>
+
 
             {/* Zone 3: Chart (Bottom) */}
             <div className={styles.bottomZone}>
@@ -339,10 +438,10 @@ const MoatCard = ({ onMoatStatusChange }) => {
             <Modal
                 isOpen={showErrorModal}
                 onClose={() => setShowErrorModal(false)}
-                title="Comparison Error"
+                title={errorTitle}
                 message={error}
             />
-        </div>
+        </div >
     );
 };
 

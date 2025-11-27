@@ -275,6 +275,11 @@
     color: #EF4444;
 }
 
+.pending {
+    background-color: rgba(245, 158, 11, 0.2);
+    color: #F59E0B;
+}
+
 /* --- Details Modal --- */
 .detailsModal {
     margin-top: 1rem;
