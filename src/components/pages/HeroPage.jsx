@@ -43,7 +43,7 @@ const HeroPage = () => {
 
         // Validate ticker before navigating
         try {
-            const response = await fetch(`http://localhost:8000/api/stock/${trimmedTicker}`);
+            const response = await fetch(`/api/stock/${trimmedTicker}`);
             if (!response.ok) {
                 setIsValidating(false); // Stop loading on error
                 setErrorMessage('Invalid stock ticker. Please try again.');
