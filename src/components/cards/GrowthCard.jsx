@@ -122,121 +122,123 @@ const GrowthCard = () => {
                 </div>
 
             </div>
-
-            {/* Chart 1: Revenue, Net Income, OCF */}
-            <div className={styles.chartContainer}>
-                <h4 className={styles.chartTitle}>Financial Performance</h4>
-                {financialData.length > 0 ? (
-                    <div className={styles.chartWrapper}>
-                        <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-                                <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
-                                <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: chartColors.tooltipBg,
-                                        border: chartColors.tooltipBorder,
-                                        color: chartColors.tooltipColor,
-                                        borderRadius: '8px',
-                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                        fontSize: '12px'
-                                    }}
-                                    formatter={(val, name) => [`$${(val / 1e9).toFixed(2)}B`, name]}
-                                    itemStyle={{ margin: '0', padding: '0' }}
-                                    labelStyle={{
-                                        margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
-                                        padding: '0',
-                                        fontWeight: 'bold' // Optional, to make the label stand out
-                                    }}
-                                />
-                                <Legend wrapperStyle={{
-                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
-                                }} />
-                                <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize} />
-                                <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize} />
-                                <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={barSize} />
-                                <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={barSize} />
-                            </ComposedChart>
-                        </ResponsiveContainer>
-                    </div>
-                ) : (
-                    <div className={styles.noData}>
-                        No financial data available for chart
-                    </div>
-                )}
-            </div>
-
-            {/* Chart 2: Margins */}
-            <div className={styles.chartContainer}>
-                <h4 className={styles.chartTitle}>Margin Trends</h4>
-                {marginData.length > 0 ? (
-                    <div className={styles.chartWrapper}>
-                        <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={marginData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
-                                <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
-                                <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `${val}%`} />
-                                <Tooltip
-                                    contentStyle={{
-                                        backgroundColor: chartColors.tooltipBg,
-                                        border: chartColors.tooltipBorder,
-                                        color: chartColors.tooltipColor,
-                                        borderRadius: '8px',
-                                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-                                        fontSize: '12px'
-                                    }}
-                                    formatter={(val, name) => [`${val.toFixed(2)}%`, name]}
-                                    itemStyle={{ margin: '0', padding: '0' }}
-                                    labelStyle={{
-                                        margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
-                                        padding: '0',
-                                        fontWeight: 'bold' // Optional, to make the label stand out
-                                    }}
-                                />
-                                <Legend wrapperStyle={{
-                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
-                                }} />
-                                <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize} />
-                                <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize} />
-                            </ComposedChart>
-                        </ResponsiveContainer>
-                    </div>
-                ) : (
-                    <div className={styles.noData}>
-                        No margin data available for chart
-                    </div>
-                )}
-            </div>
-
-            {/* Growth Estimates Table */}
-            {growth.estimates && growth.estimates.length > 0 && (
-                <div>
-                    <h4 className={styles.tableTitle}>5-Year Growth Estimates</h4>
-                    <div className={styles.tableContainer}>
-                        <table className={styles.table}>
-                            <thead className={styles.tableHead}>
-                                <tr>
-                                    <th className={styles.tableCell}>Period</th>
-                                    <th className={styles.tableCell}>Growth Estimates</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {growth.estimates.map((row, idx) => (
-                                    <tr key={idx} className={styles.tableRow}>
-                                        <td className={styles.periodCell}>
-                                            {row['Period'] || row['period'] || row['Growth Estimates'] || row['index'] || 'N/A'}
-                                        </td>
-                                        <td className={styles.valueCell}>
-                                            {(row['stockTrend'] || row['stock'] || row[Object.keys(row).find(k => k !== 'period' && k !== 'Period' && k !== 'index')] || 'N/A')}
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+            <div className={styles.allChartsContainer}>
+                {/* Chart 1: Revenue, Net Income, OCF */}
+                <div className={styles.chartContainer}>
+                    <h4 className={styles.chartTitle}>Financial Performance</h4>
+                    {financialData.length > 0 ? (
+                        <div className={styles.chartWrapper}>
+                            <ResponsiveContainer width="100%" height={chartHeight}>
+                                <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                                    <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
+                                    <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: chartColors.tooltipBg,
+                                            border: chartColors.tooltipBorder,
+                                            color: chartColors.tooltipColor,
+                                            borderRadius: '8px',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            fontSize: '12px'
+                                        }}
+                                        formatter={(val, name) => [`$${(val / 1e9).toFixed(2)}B`, name]}
+                                        itemStyle={{ margin: '0', padding: '0' }}
+                                        labelStyle={{
+                                            margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                            padding: '0',
+                                            fontWeight: 'bold' // Optional, to make the label stand out
+                                        }}
+                                    />
+                                    <Legend wrapperStyle={{
+                                        width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
+                                    }} />
+                                    <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize} />
+                                    <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize} />
+                                    <Bar dataKey="netIncome" name="Net Income" fill="#F59E0B" barSize={barSize} />
+                                    <Bar dataKey="ocf" name="Operating Cash Flow" fill="#10B981" barSize={barSize} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+                    ) : (
+                        <div className={styles.noData}>
+                            No financial data available for chart
+                        </div>
+                    )}
                 </div>
-            )}
+
+
+                {/* Chart 2: Margins */}
+                <div className={styles.chartContainer}>
+                    <h4 className={styles.chartTitle}>Margin Trends</h4>
+                    {marginData.length > 0 ? (
+                        <div className={styles.chartWrapper}>
+                            <ResponsiveContainer width="100%" height={chartHeight}>
+                                <ComposedChart data={marginData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
+                                    <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
+                                    <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `${val}%`} />
+                                    <Tooltip
+                                        contentStyle={{
+                                            backgroundColor: chartColors.tooltipBg,
+                                            border: chartColors.tooltipBorder,
+                                            color: chartColors.tooltipColor,
+                                            borderRadius: '8px',
+                                            boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                                            fontSize: '12px'
+                                        }}
+                                        formatter={(val, name) => [`${val.toFixed(2)}%`, name]}
+                                        itemStyle={{ margin: '0', padding: '0' }}
+                                        labelStyle={{
+                                            margin: '0 0 3px 0', // Collapse top/bottom margin, but leave a small gap (3px) below the label
+                                            padding: '0',
+                                            fontWeight: 'bold' // Optional, to make the label stand out
+                                        }}
+                                    />
+                                    <Legend wrapperStyle={{
+                                        width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
+                                    }} />
+                                    <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize} />
+                                    <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize} />
+                                </ComposedChart>
+                            </ResponsiveContainer>
+                        </div>
+                    ) : (
+                        <div className={styles.noData}>
+                            No margin data available for chart
+                        </div>
+                    )}
+                </div>
+
+                {/* Growth Estimates Table */}
+                {growth.estimates && growth.estimates.length > 0 && (
+                    <div>
+                        <h4 className={styles.tableTitle}>5-Year Growth Estimates</h4>
+                        <div className={styles.tableContainer}>
+                            <table className={styles.table}>
+                                <thead className={styles.tableHead}>
+                                    <tr>
+                                        <th className={styles.tableCell}>Period</th>
+                                        <th className={styles.tableCell}>Growth Estimates</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {growth.estimates.map((row, idx) => (
+                                        <tr key={idx} className={styles.tableRow}>
+                                            <td className={styles.periodCell}>
+                                                {row['Period'] || row['period'] || row['Growth Estimates'] || row['index'] || 'N/A'}
+                                            </td>
+                                            <td className={styles.valueCell}>
+                                                {(row['stockTrend'] || row['stock'] || row[Object.keys(row).find(k => k !== 'period' && k !== 'Period' && k !== 'index')] || 'N/A')}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

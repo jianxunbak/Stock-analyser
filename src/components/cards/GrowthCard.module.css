@@ -1,37 +1,58 @@
 .card {
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
     padding: 1.5rem;
-    background-color: var(--bg-secondary);
-    border-radius: 0.5rem;
-    box-shadow: var(--card-shadow);
     color: var(--text-primary);
-    border: 1px solid var(--border-color);
+    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        inset 5px 3.5px 5px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5);
 }
+
+/* Specular Highlight / Reflection */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(105deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 30%,
+            transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.card>* {
+    position: relative;
+    z-index: 1;
+}
+
 
 .loading {
     padding: 1.5rem;
     background-color: var(--bg-secondary);
     border-radius: 0.5rem;
     height: 16rem;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: .5;
-    }
 }
 
 .title {
     font-size: 1.25rem;
     line-height: 1.75rem;
     font-weight: 700;
-    margin-bottom: 1rem;
+    margin: 0;
     color: var(--text-primary);
 }
 
@@ -40,18 +61,14 @@
 }
 
 .metricsGrid {
-    /* display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.5rem; */
-    margin-bottom: 2rem;
     flex-wrap: wrap;
 }
 
 .metricCard {
-    background-color: var(--bg-primary);
-    padding: 0.8rem 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
+    padding: 0;
+    border-radius: 1rem;
+    border-radius: 20px;
+    border: none;
 }
 
 .metricLabel {
@@ -77,18 +94,19 @@
     color: #f87171;
 }
 
-.chartContainer {
-    min-height: 300px;
-    /* Smaller for mobile */
-    width: 100%;
-    margin-bottom: 2rem;
-    box-sizing: border-box;
+.allChartsContainer {
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-primary);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
+    gap: 1.5rem;
+}
+
+.chartContainer {
+    border-radius: 1rem;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 300px;
+    border-radius: 20px;
 }
 
 .chartContainer *:focus {

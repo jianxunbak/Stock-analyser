@@ -1,40 +1,62 @@
 .card {
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
     padding: 1.5rem;
-    background-color: var(--bg-secondary);
-    border-radius: 0.5rem;
-    box-shadow: var(--card-shadow);
     color: var(--text-primary);
+    gap: 1.5rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    border: 1px solid var(--border-color);
+
+    /* Ensure the content is above the pseudo-element */
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        inset 5px 3.5px 5px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5);
 }
+
+/* Specular Highlight / Reflection */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(105deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 30%,
+            transparent 50%);
+    pointer-events: none;
+}
+
+/* Ensure content sits above the background effects */
+.card>* {
+    position: relative;
+    z-index: 1;
+}
+
 
 .loading {
     padding: 1.5rem;
     background-color: var(--bg-secondary);
     border-radius: 0.5rem;
     height: 16rem;
-    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-@keyframes pulse {
 
-    0%,
-    100% {
-        opacity: 1;
-    }
-
-    50% {
-        opacity: .5;
-    }
-}
 
 .title {
     font-size: 1.25rem;
     line-height: 1.75rem;
     font-weight: 700;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0rem;
+    margin-top: 0;
     color: var(--text-primary);
 }
 
@@ -61,9 +83,7 @@
 
 /* Score Card Styles */
 .scoreCard {
-    background-color: var(--bg-primary);
     padding: 1.5rem;
-    border-radius: 0.5rem;
     text-align: center;
     height: 100%;
     display: flex;
@@ -71,8 +91,16 @@
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
-    border: 1px solid var(--border-color);
     position: relative;
+
+    background: transparent;
+    border-radius: 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-left: 1px solid rgba(255, 255, 255, 0.15);
+    /* box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.5),
+        inset 0 0 30px rgba(255, 255, 255, 0.02); */
 }
 
 .scoreLabel {
@@ -140,34 +168,79 @@
     flex: 1;
     padding: 0.25rem 0.5rem;
     font-size: 0.75rem;
-    border-radius: 0.25rem;
-    transition: all 150ms;
+    border-radius: 1rem;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+    background: transparent;
+}
+
+.button:focus {
+    outline: none;
+}
+
+.buttonHighActive:hover,
+.buttonMedActive:hover,
+.buttonLowActive:hover {
+    outline: none;
     border: 1px solid transparent;
 }
 
 .buttonHighActive {
-    background-color: #16a34a;
+    background-color: transparent;
+    border: 1px solid transparent;
     color: #ffffff;
+    box-shadow:
+        0 6px 12px #16a34a4b,
+        inset 0 2px 4px #16a34a;
 }
 
+.buttonHighInactive:hover {
+    border: 1px solid transparent;
+    /* Added */
+    box-shadow:
+        0 6px 12px #16a34a4b,
+        inset 0 2px 4px #16a34a;
+}
+
+
 .buttonMedActive {
-    background-color: #ca8a04;
+    background-color: transparent;
+    border: 1px solid transparent;
     color: #ffffff;
+    box-shadow:
+        0 6px 12px #ca8b0437,
+        inset 0 2px 4px #ca8a04;
+}
+
+.buttonMedInactive:hover {
+    border: 1px solid transparent;
+    /* Added */
+    box-shadow:
+        0 6px 12px #ca8b0437,
+        inset 0 2px 4px #ca8a04;
 }
 
 .buttonLowActive {
-    background-color: #dc2626;
+    border: 1px solid transparent;
+    background-color: transparent;
     color: #ffffff;
+    box-shadow:
+        0 6px 12px #dc262627,
+        inset 0 2px 4px #dc2626;
+}
+
+.buttonLowInactive:hover {
+    border: 1px solid transparent;
+    /* Added */
+    box-shadow:
+        0 6px 12px #dc262627,
+        inset 0 2px 4px #dc2626;
 }
 
 .buttonInactive {
-    background-color: var(--bg-primary);
+    /* background-color: var(--bg-primary); */
     color: var(--text-secondary);
     border: 1px solid var(--border-color);
-}
-
-.buttonInactive:hover {
-    background-color: var(--glass-bg);
 }
 
 /* Bottom Zone: Chart */
@@ -176,17 +249,12 @@
 }
 
 .chartContainer {
-    min-height: 300px;
-    /* Smaller for mobile */
-    width: 100%;
-    margin-bottom: 2rem;
-    box-sizing: border-box;
+    border-radius: 1rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
-    background-color: var(--bg-primary);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    border: 1px solid var(--border-color);
+    min-height: 300px;
+    border-radius: 20px;
 }
 
 @media (min-width: 768px) {
@@ -227,11 +295,11 @@
 }
 
 .tickerInput {
-    background-color: var(--input-bg);
+    background-color: transparent;
     border: 1px solid var(--border-color);
     color: var(--text-primary);
     padding: 0.25rem 0.5rem;
-    border-radius: 0.25rem;
+    border-radius: 1em;
     font-size: 0.75rem;
     width: 120px;
 }
@@ -240,21 +308,26 @@
     outline: none;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 .addButton {
-    background-color: rgb(73, 71, 194);
+    background-color: transparent;
     color: white;
-    border: none;
+    border: 1px solid var(--border-color);
     padding: 0.25rem 0.75rem;
-    border-radius: 0.25rem;
+    border-radius: 1rem;
     cursor: pointer;
     font-size: 0.75rem;
 }
 
 .addButton:hover {
-    background-color: #2563eb;
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 .activeComparisons {
@@ -263,8 +336,6 @@
     gap: 0.5rem;
     margin-bottom: 1rem;
 }
-
-
 
 .comparisonTag {
     display: flex;

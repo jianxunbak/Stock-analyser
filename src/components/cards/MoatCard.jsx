@@ -312,21 +312,21 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
                                 <div className={styles.buttonGroup}>
                                     <button
                                         onClick={() => handleScoreChange(cat.id, 1)}
-                                        className={`${styles.button} ${scores[cat.id] === 1 ? styles.buttonHighActive : styles.buttonInactive}`}
+                                        className={`${styles.button} ${scores[cat.id] === 1 ? styles.buttonHighActive : styles.buttonHighInactive}`}
                                     >
-                                        High (1.0)
+                                        High
                                     </button>
                                     <button
                                         onClick={() => handleScoreChange(cat.id, 0.5)}
-                                        className={`${styles.button} ${scores[cat.id] === 0.5 ? styles.buttonMedActive : styles.buttonInactive}`}
+                                        className={`${styles.button} ${scores[cat.id] === 0.5 ? styles.buttonMedActive : styles.buttonMedInactive}`}
                                     >
-                                        Low (0.5)
+                                        Low
                                     </button>
                                     <button
                                         onClick={() => handleScoreChange(cat.id, 0)}
-                                        className={`${styles.button} ${scores[cat.id] === 0 ? styles.buttonLowActive : styles.buttonInactive}`}
+                                        className={`${styles.button} ${scores[cat.id] === 0 ? styles.buttonLowActive : styles.buttonLowInactive}`}
                                     >
-                                        None (0)
+                                        None
                                     </button>
                                 </div>
                             </div>

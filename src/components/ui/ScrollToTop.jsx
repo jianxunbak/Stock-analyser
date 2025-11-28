@@ -33,7 +33,10 @@ const ScrollToTop = () => {
             onClick={scrollToTop}
             aria-label="Scroll to top"
         >
-            <ArrowUp size={20} />
+            <ArrowUp
+                size={24}
+                strokeWidth={2.5}
+            />
         </button>
     );
 };

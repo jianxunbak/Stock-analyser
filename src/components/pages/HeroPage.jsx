@@ -116,7 +116,7 @@ const HeroPage = () => {
 
                             <button
                                 onClick={handleLogout}
-                                className={styles.watchlistButton} // Reuse icon button style
+                                className={styles.logoutButton} // Reuse icon button style
                                 title="Log Out"
                             >
                                 <LogOut size={25} className={styles.starIcon} />
@@ -185,7 +185,10 @@ const HeroPage = () => {
             </header>
 
             <div className={styles.content}>
-                <h1 className={styles.title}>Stock Analyser</h1>
+                <div className={styles.heroTextContainer}>
+                    <h1 className={styles.title}>Stock Analyser</h1>
+                </div>
+
                 <p className={styles.subtitle}>
                     Financial analysis for the modern investor.
                 </p>

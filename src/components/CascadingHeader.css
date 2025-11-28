@@ -1,0 +1,42 @@
+.csh-sticky-right {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    justify-content: flex-end;
+    /* padding: 20px 40px; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    pointer-events: auto;
+    /* Allow interaction with header background */
+    background: linear-gradient(to bottom, var(--bg-primary), transparent);
+    /* background: var(--bg-primary); */
+
+    /* Create the "black space" / cropping effect */
+    backdrop-filter: blur(10px);
+
+
+    transition: all 0.3s ease;
+}
+
+/* Container for the bottom-left sticky element */
+.csh-sticky-left {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    /* Same z-index, but later in DOM so visually on top if they overlap, though they shouldn't here */
+    display: flex;
+    justify-content: flex-start;
+    /* padding: 20px 40px; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    /* Matches top padding of right header to align them */
+    pointer-events: none;
+}
+
+/* Helper to ensure children can be clicked even if container has pointer-events: none */
+.csh-sticky-right>*,
+.csh-sticky-left>* {
+    pointer-events: auto;
+}

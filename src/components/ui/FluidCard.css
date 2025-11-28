@@ -1,0 +1,21 @@
+.fluid-card-container {
+    width: 100%;
+    margin: 1rem auto;
+    perspective: 1000px;
+}
+
+.fluid-card-content {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    overflow: hidden;
+    transition: background 0.3s ease;
+}
+
+.fluid-card-content:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.2);
+}

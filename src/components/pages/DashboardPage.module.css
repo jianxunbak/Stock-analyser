@@ -2,15 +2,21 @@
     min-height: 100vh;
     max-width: 100%;
     background-color: var(--bg-primary);
+    /* Subtle background blobs for glass effect */
+    background-image:
+        radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 85% 30%, rgba(147, 51, 234, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 50% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
     color: var(--text-primary);
-    padding: 1rem;
-    overflow-x: hidden;
+    padding: 0 1rem 1rem 1rem;
+    /* overflow-x: hidden; - Removed to allow position: sticky to work */
     /* Prevent horizontal scroll */
 }
 
 @media (min-width: 768px) {
     .container {
-        padding: 2rem;
+        padding: 0 2rem 2rem 2rem;
     }
 }
 
@@ -27,6 +33,7 @@
     gap: 0.5rem;
 }
 
+/* Header Area (Title only) */
 .header {
     margin-bottom: 2rem;
     display: flex;
@@ -39,8 +46,21 @@
     /* For absolute menu positioning */
 }
 
-.title {
-    font-size: 1.2rem;
+@media (min-width: 768px) {
+    .header {
+        margin: -2rem -2rem 2rem -2rem;
+        padding: 1rem 2rem;
+    }
+}
+
+.logoContainer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.titleText {
+    font-size: 1.5rem;
     /* Smaller on mobile to fit search */
     line-height: 2rem;
     font-weight: 700;
@@ -53,11 +73,31 @@
     text-align: left;
     white-space: nowrap;
     flex-shrink: 0;
-    /* Prevent title from shrinking too much */
+    display: none;
+    /* Hidden on mobile */
 }
 
+.titleIcon {
+    color: #60a5fa;
+    display: block;
+}
+
+@media (min-width: 600px) {
+    .titleText {
+        display: block;
+    }
+
+    .titleIcon {
+        display: none;
+    }
+}
+
+/* ... existing styles ... */
+
+
+
 @media (min-width: 768px) {
-    .title {
+    .titleText {
         font-size: 1.875rem;
         line-height: 2.25rem;
         width: auto;
@@ -65,7 +105,29 @@
     }
 }
 
+/* Back Button Styles */
+.backButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent !important;
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 2rem;
+    width: 2rem;
+    padding: 0;
+}
 
+
+[data-theme="light"] .backButton:hover {
+    background: #f3f4f6;
+    border-color: #3b82f6;
+}
 
 .searchContainer {
     position: relative;
@@ -82,8 +144,8 @@
     /* Reduced width for mobile */
     padding: 0.5rem 2.5rem 0.5rem 1rem;
     border: 1px solid var(--border-color);
-    background-color: var(--input-bg);
-    border-radius: 1.25rem;
+    background-color: transparent;
+    border-radius: 1.5rem;
     color: var(--text-primary);
     font-size: 0.9rem;
     transition: all 0.3s ease;
@@ -200,7 +262,9 @@
     outline: none;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .searchInput:focus {
@@ -242,19 +306,19 @@
 .grid {
     display: grid;
     grid-template-columns: repeat(1, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 1.5rem;
 }
 
 .watchlistButton {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--glass-bg);
+    background: transparent;
     border: 1px solid var(--glass-border);
     padding: 0 0.6rem;
     /* Smaller padding mobile */
-    border-radius: 50%;
-    color: var(--text-primary);
+    border-radius: 1.5rem;
+    color: var(--text-secondary);
     font-size: 0.8rem;
     /* Smaller font mobile */
     font-weight: 600;
@@ -276,10 +340,12 @@
 
 
 .watchlistButton:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    background: transparent;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .watchlistButton:hover {
@@ -295,12 +361,12 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: var(--glass-bg);
+    background: transparent;
     border: 1px solid var(--glass-border);
     padding: 0 0.6rem;
     /* Smaller padding mobile */
-    border-radius: 10px;
-    color: var(--text-primary);
+    border-radius: 1.5rem;
+    color: var(--text-secondary);
     font-size: 0.8rem;
     /* Smaller font mobile */
     font-weight: 600;
@@ -319,10 +385,12 @@
 }
 
 .logoutButton:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    background: transparent;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .logoutButton:hover {
@@ -342,16 +410,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 1.5rem;
     transition: transform 0.2s;
     height: 2.5rem
 }
 
 .userButton:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    background: transparent;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 .userAvatarSmall {
@@ -386,7 +456,7 @@
     justify-content: center;
     background: var(--glass-bg);
     border: 1px solid var(--glass-border);
-    border-radius: 10px;
+    border-radius: 1.5rem;
     color: var(--text-primary);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -396,14 +466,16 @@
     width: 2rem;
     /* Square */
     padding: 0;
-    margin-bottom: 1rem;
+    /* margin-bottom: 1rem; */
 }
 
 .backButton:hover {
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .backButton:hover {

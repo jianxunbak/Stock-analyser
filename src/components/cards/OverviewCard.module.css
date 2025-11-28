@@ -1,12 +1,44 @@
 .card {
-    padding: 1.5rem;
-    background-color: var(--bg-secondary);
-    border-radius: 0.5rem;
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
-    color: var(--text-primary);
     position: relative;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    padding: 1.5rem;
+    color: var(--text-primary);
+    gap: 1.5rem;
+    display: flex;
+    flex-direction: column;
+
+    /* Ensure the content is above the pseudo-element */
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        inset 5px 3.5px 5px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Specular Highlight / Reflection */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(105deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 30%,
+            transparent 50%);
+    pointer-events: none;
+}
+
+/* Ensure content sits above the background effects */
+.card>* {
+    position: relative;
+    z-index: 1;
 }
 
 .loading {
@@ -21,7 +53,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
 @media (min-width: 1024px) {
@@ -130,10 +162,9 @@
     display: flex;
     align-items: center;
     gap: 0.25rem;
-    background-color: var(--bg-primary);
+    background-color: transparent;
     padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
-    /* Pill shape */
+    border-radius: 1rem;
     font-size: 0.75rem;
     border: 1px solid var(--border-color);
     min-height: 1.5rem;
@@ -156,32 +187,29 @@
 
 .viewDetailsBtn {
     align-self: flex-start;
-    background-color: var(--bg-primary);
-    color: var(--text-primary);
-    padding: 0.25rem 0.5rem;
-    border-radius: 0.5rem;
+    background-color: transparent;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 1rem;
     font-weight: 500;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
     border: 1px solid var(--border-color);
     cursor: pointer;
-    /* min-height: 1.5rem; */
-
 }
 
 .viewDetailsBtn:hover {
-    background-color: var(--text-secondary);
-    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
+
 
 .viewDetailsBtn:focus {
     outline: none;
 }
 
 .iconButton {
-    /* Make the button much smaller and square */
-    /* width: 1.5rem;
-    height: 1.5rem; */
-    /* Ensure the icon is centered inside the button */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -190,14 +218,16 @@
 
 /* Right: Score Section */
 .scoreSection {
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
     flex: 2;
-    background-color: var(--bg-primary);
-    border-radius: 0.75rem;
-    padding: 1.25rem;
+    border-radius: 1rem;
+    /* padding: 1.25rem; */
     display: flex;
     flex-direction: column;
+    color: var(--text-primary);
     align-self: stretch;
-    border: 1px solid var(--border-color);
 }
 
 .scoreHeader {
@@ -210,7 +240,7 @@
 }
 
 .scoreTitle {
-    font-size: 1.125rem;
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--text-primary);
     margin: 0;
@@ -304,11 +334,11 @@
 
 /* --- Details Modal --- */
 .detailsModal {
-    margin-top: 1rem;
-    margin-bottom: 2rem;
+    /* margin-top: 0.5rem; */
+    margin-bottom: 1.5rem;
     background-color: var(--bg-primary);
     border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
+    border-radius: 1rem;
     padding: 1.5rem;
     animation: fadeIn 0.3s ease-in-out;
 }
@@ -418,13 +448,9 @@
 .timeframeControls {
     display: flex;
     flex-wrap: wrap;
-    /* gap: 0.5rem; */
-    background-color: var(--bg-primary);
     padding: 0.25rem;
     border-radius: 0.5rem;
-    /* height: 1rem; */
     align-items: center;
-    border: 1px solid var(--border-color);
     justify-content: space-evenly;
 }
 
@@ -433,7 +459,7 @@
     border: none;
     color: var(--text-secondary);
     padding: 0.25rem 0.75rem;
-    border-radius: 0.25rem;
+    border-radius: 1rem;
     font-size: 0.8rem;
     cursor: pointer;
     transition: all 0.2s;
@@ -443,50 +469,53 @@
 }
 
 .tfButton:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-    border: 1px solid rgb(73, 71, 194);
+    background: transparent;
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
+/* 
 [data-theme="light"] .tfButton:hover {
-    background: #f3f4f6;
-    border-color: #3b82f6;
-}
+    background: transparent;
+    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.5);
+} */
 
 .tfButton:focus {
     outline: none;
 }
 
 .activeTf {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
-    border: 1px solid rgb(73, 71, 194);
+    background: transparent;
+    border-bottom: 1px solid rgba(24, 42, 65, 0.5);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
     color: var(--text-primary);
     font-weight: 600;
 }
 
-[data-theme="light"] .activeTf {
+/* [data-theme="light"] .activeTf {
     background: #e5e7eb;
     border-color: #3b82f6;
     color: #111827;
-}
+} */
 
-.activeTf:hover {
+/* .activeTf:hover {
     background-color: #2563EB;
-}
+} */
 
 .chartContainer {
-    background-color: var(--bg-primary);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    /* height: 400px; */
-    border: 1px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0;
     display: flex;
     flex-direction: column;
     min-height: 300px;
+    border-radius: 20px;
 }
+
 
 .chartContainer *:focus {
     outline: none !important;
@@ -499,11 +528,14 @@
 }
 
 .chartWrapper {
+    position: relative;
+    z-index: 1;
     flex: 1;
     width: 100%;
     min-height: 0;
     height: 100%;
     outline: none;
+    background-color: var(--chart-background-color, transparent);
 }
 
 .eventKey {

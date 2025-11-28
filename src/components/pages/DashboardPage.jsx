@@ -13,12 +13,12 @@ import FinancialTables from '../cards/FinancialTables';
 import NewsEstimates from '../cards/NewsEstimates';
 import Modal from '../ui/Modal';
 import WatchlistModal from '../ui/WatchlistModal';
-import { Search, ArrowLeft, Star, Menu, X, LogOut } from 'lucide-react';
+import { Search, ArrowLeft, Star, Menu, X, LogOut, TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import UserProfileModal from '../ui/UserProfileModal';
+import { FluidCard } from '../ui/FluidCard';
+import CascadingHeader from '../CascadingHeader';
 import styles from './DashboardPage.module.css';
-
-// ...
 
 const DashboardPage = () => {
     const { stockData, loadStockData, error, loading } = useStockData();
@@ -113,132 +113,155 @@ const DashboardPage = () => {
 
     if (authLoading) return <div>Loading...</div>; // Or a spinner
 
-    return (
-        <div className={styles.container}>
-            <div className={styles.wrapper}>
-                <header className={styles.header}>
-                    <h1
-                        className={styles.title}
-                        onClick={() => navigate('/')}
-                        style={{ cursor: 'pointer' }}
-                    >
-                        Stock Analyser
-                    </h1>
+    const actionGroupContent = (
+        <div className={styles.actionGroup}>
+            {/* Search Bar - Always Visible */}
+            <div className={styles.searchContainer}>
+                <input
+                    type="text"
+                    value={ticker}
+                    onChange={(e) => setTicker(e.target.value)}
+                    placeholder="Search..."
+                    className={styles.searchInput}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleSearch(e);
+                        }
+                    }}
+                />
+                <Search
+                    className={styles.searchIcon}
+                    onClick={handleSearchIconClick}
+                />
+            </div>
 
-                    <div className={styles.actionGroup}>
-                        {/* Search Bar - Always Visible */}
-                        <div className={styles.searchContainer}>
-                            <input
-                                type="text"
-                                value={ticker}
-                                onChange={(e) => setTicker(e.target.value)}
-                                placeholder="Search..."
-                                className={styles.searchInput}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleSearch(e);
-                                    }
-                                }}
-                            />
-                            <Search
-                                className={styles.searchIcon}
-                                onClick={handleSearchIconClick}
-                            />
-                        </div>
+            {/* Desktop Actions */}
+            <div className={styles.desktopActions}>
+                <button
+                    className={styles.watchlistButton}
+                    onClick={() => setShowWatchlist(true)}
+                >
+                    <Star size={16} className={styles.starIcon} />
+                </button>
 
-                        {/* Desktop Actions */}
-                        <div className={styles.desktopActions}>
-                            <button
-                                className={styles.watchlistButton}
-                                onClick={() => setShowWatchlist(true)}
-                            >
-                                <Star size={16} className={styles.starIcon} />
-                            </button>
-
-                            {currentUser && (
-                                <>
-                                    <button
-                                        className={styles.userButton}
-                                        onClick={() => setShowProfileModal(true)}
-                                        title="User Profile"
-                                    >
-                                        {currentUser.photoURL ? (
-                                            <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
-                                        ) : (
-                                            <div className={styles.userAvatarPlaceholder}>
-                                                {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
-                                            </div>
-                                        )}
-                                    </button>
-
-                                    <button
-                                        onClick={handleLogout}
-                                        className={styles.watchlistButton}
-                                        title="Log Out"
-                                    >
-                                        <LogOut size={16} className={styles.starIcon} />
-                                    </button>
-                                </>
-                            )}
-                        </div>
-
-                        {/* Mobile Menu Button */}
+                {currentUser && (
+                    <>
                         <button
-                            className={styles.menuButton}
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            className={styles.userButton}
+                            onClick={() => setShowProfileModal(true)}
+                            title="User Profile"
                         >
-                            <Menu size={24} />
+                            {currentUser.photoURL ? (
+                                <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
+                            ) : (
+                                <div className={styles.userAvatarPlaceholder}>
+                                    {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
+                                </div>
+                            )}
                         </button>
-                    </div>
 
-                    {/* Mobile Menu Dropdown */}
-                    {isMenuOpen && (
-                        <div className={styles.mobileMenu}>
+                        <button
+                            onClick={handleLogout}
+                            className={styles.watchlistButton}
+                            title="Log Out"
+                        >
+                            <LogOut size={16} className={styles.starIcon} />
+                        </button>
+                    </>
+                )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <button
+                className={styles.menuButton}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+                <Menu size={24} />
+            </button>
+
+            {/* Mobile Menu Dropdown */}
+            {isMenuOpen && (
+                <div className={styles.mobileMenu}>
+                    <button
+                        className={styles.watchlistButton}
+                        onClick={() => {
+                            setShowWatchlist(true);
+                            setIsMenuOpen(false);
+                        }}
+                    >
+                        <Star size={16} className={styles.starIcon} />
+                    </button>
+
+                    {currentUser && (
+                        <>
                             <button
-                                className={styles.watchlistButton}
+                                className={styles.userButton}
                                 onClick={() => {
-                                    setShowWatchlist(true);
+                                    setShowProfileModal(true);
                                     setIsMenuOpen(false);
                                 }}
                             >
-                                <Star size={16} className={styles.starIcon} />
+                                {currentUser.photoURL ? (
+                                    <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
+                                ) : (
+                                    <div className={styles.userAvatarPlaceholder}>
+                                        {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
+                                    </div>
+                                )}
                             </button>
 
-                            {currentUser && (
-                                <>
-                                    <button
-                                        className={styles.userButton}
-                                        onClick={() => {
-                                            setShowProfileModal(true);
-                                            setIsMenuOpen(false);
-                                        }}
-                                    >
-                                        {currentUser.photoURL ? (
-                                            <img src={currentUser.photoURL} alt="User" className={styles.userAvatarSmall} />
-                                        ) : (
-                                            <div className={styles.userAvatarPlaceholder}>
-                                                {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : 'U'}
-                                            </div>
-                                        )}
-                                    </button>
-
-                                    <button
-                                        onClick={() => {
-                                            handleLogout();
-                                            setIsMenuOpen(false);
-                                        }}
-                                        className={styles.watchlistButton}
-                                        title="Log Out"
-                                    >
-                                        <LogOut size={16} className={styles.starIcon} />
-                                    </button>
-                                </>
-                            )}
-                        </div>
+                            <button
+                                onClick={() => {
+                                    handleLogout();
+                                    setIsMenuOpen(false);
+                                }}
+                                className={styles.watchlistButton}
+                                title="Log Out"
+                            >
+                                <LogOut size={16} className={styles.starIcon} />
+                            </button>
+                        </>
                     )}
+                </div>
+            )}
+        </div>
+    );
 
-                </header>
+    const backButtonContent = !loading && (
+        <div
+            onClick={() => navigate('/')}
+            className={styles.backButton}
+        >
+            <ArrowLeft size={20} />
+        </div>
+    );
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.wrapper} style={{ position: 'relative' }}>
+                <div
+                    className={styles.logoContainer}
+                    onClick={() => navigate('/')}
+                    style={{
+                        cursor: 'pointer',
+                        position: 'absolute',
+                        top: '20px',
+                        left: '0px',
+                        zIndex: 60
+                    }}
+                >
+                    <h1 className={styles.titleText}>
+                        Stock Analyser
+                    </h1>
+                    <TrendingUp className={styles.titleIcon} size={32} />
+                </div>
+
+                <CascadingHeader
+                    topRightContent={actionGroupContent}
+                    bottomLeftContent={backButtonContent}
+                    gap="40px"
+                />
 
                 <Modal
                     isOpen={showErrorModal}
@@ -249,43 +272,51 @@ const DashboardPage = () => {
 
                 <div className={styles.grid}>
                     <div className={styles.colSpan3} style={{ position: 'relative' }}>
-                        {!loading && (
-                            <div
-                                onClick={() => navigate('/')}
-                                className={styles.backButton}
-                            >
-                                <ArrowLeft size={20} />
-                            </div>
-                        )}
-                        <OverviewCard moatStatusLabel={moatStatusLabel} isMoatEvaluating={isMoatEvaluating} />
+                        <FluidCard>
+                            <OverviewCard moatStatusLabel={moatStatusLabel} isMoatEvaluating={isMoatEvaluating} />
+                        </FluidCard>
                     </div>
                     <div className={styles.colSpan3}>
-                        <GrowthCard />
+                        <FluidCard>
+                            <GrowthCard />
+                        </FluidCard>
                     </div>
                     <div className={styles.colSpan3}>
-                        <ProfitabilityCard />
+                        <FluidCard>
+                            <ProfitabilityCard />
+                        </FluidCard>
                     </div>
                     <div className={styles.colSpan3}>
-                        <MoatCard
-                            key={stockData?.overview?.symbol || 'moat-card'}
-                            onMoatStatusChange={setMoatStatusLabel}
-                            onIsEvaluatingChange={setIsMoatEvaluating}
-                        />
+                        <FluidCard>
+                            <MoatCard
+                                key={stockData?.overview?.symbol || 'moat-card'}
+                                onMoatStatusChange={setMoatStatusLabel}
+                                onIsEvaluatingChange={setIsMoatEvaluating}
+                            />
+                        </FluidCard>
                     </div>
                     <div className={styles.colSpan1}>
-                        <DebtCard />
+                        <FluidCard>
+                            <DebtCard />
+                        </FluidCard>
                     </div>
 
                     <div className={styles.colSpan1}>
-                        <ValuationCard />
+                        <FluidCard>
+                            <ValuationCard />
+                        </FluidCard>
                     </div>
 
                     <div className={styles.colSpan1}>
-                        <SupportResistanceCard />
+                        <FluidCard>
+                            <SupportResistanceCard />
+                        </FluidCard>
                     </div>
 
                     <div className={styles.colSpan3}>
-                        <FinancialTables />
+                        <FluidCard>
+                            <FinancialTables />
+                        </FluidCard>
                     </div>
                 </div>
 

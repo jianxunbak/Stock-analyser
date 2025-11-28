@@ -37,6 +37,13 @@
     white-space: nowrap;
 }
 
+@media (min-width: 768px) {
+    .headerTitle {
+        font-size: 1.875rem;
+        line-height: 2.25rem;
+    }
+}
+
 .desktopActions {
     display: none;
     align-items: center;
@@ -130,7 +137,7 @@
     border: 1px solid var(--glass-border);
     padding: 0 0.6rem;
     /* Smaller padding mobile */
-    border-radius: 10px;
+    border-radius: 50%;
     color: var(--text-primary);
     font-size: 0.8rem;
     /* Smaller font mobile */
@@ -139,7 +146,18 @@
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 2rem;
+    margin-left: 0;
+    height: 2.8rem;
+    width: 2.8rem;
+}
+
+.logoutButton:hover {
+    background: transparent;
+    border: 1px solid rgb(73, 71, 194);
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 @media (min-width: 768px) {
@@ -180,10 +198,12 @@
 
 
 .watchlistButton:hover {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+    background: transparent;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .watchlistButton:hover {
@@ -216,7 +236,9 @@
     background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 
@@ -270,7 +292,7 @@
 }
 
 .subtitle {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: var(--text-secondary);
     margin-bottom: 0;
     animation: fadeInUp 0.8s ease-out 0.2s backwards;
@@ -314,7 +336,7 @@
 }
 
 .subtitleInstruction {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     color: var(--text-secondary);
     margin-bottom: 2rem;
     margin-top: 0;
@@ -358,7 +380,9 @@
     outline: none;
     border: 1px solid rgb(73, 71, 194);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(96, 165, 250, 0.2);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 [data-theme="light"] .searchInput:focus {

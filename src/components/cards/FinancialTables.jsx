@@ -82,8 +82,8 @@ const FinancialTables = () => {
 
     return (
         <div className={styles.card}>
-            <div className={styles.header} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: isExpanded ? '1rem' : '0' }}>
-                <h3 className={styles.title} style={{ margin: 0 }}>Financial Statements</h3>
+            <div className={styles.header} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: 0 }}>
+                <h3 className={styles.title}>Financial Statements</h3>
                 <button
                     onClick={() => setIsExpanded(!isExpanded)}
                     className={styles.iconButton}

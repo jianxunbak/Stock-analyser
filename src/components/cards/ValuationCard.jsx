@@ -35,28 +35,27 @@ const ValuationCard = () => {
 
                 <div className={styles.section}>
                     <div className={styles.valueRow}>
-                        <div>
-                            <h4 className={styles.label}>Current Price</h4>
+                        <div className={styles.valuationContainer}>
+                            <h4 className={styles.valuationLabel}>Current Price</h4>
                             <p className={`${styles.priceValue} ${overview?.price <= valuation.intrinsicValue ? styles.positive : styles.negative}`}>${overview?.price?.toFixed(2)}</p>
                         </div>
-                        <div>
-                            <h4 className={styles.label}>Intrinsic Value</h4>
+                        <div className={styles.valuationContainer}>
+                            <h4 className={styles.valuationLabel}>Intrinsic Value</h4>
                             <p className={styles.intrinsicValue}>${valuation.intrinsicValue ? valuation.intrinsicValue.toFixed(2) : 'N/A'}</p>
                         </div>
-                    </div>
-                    <div className={styles.differenceSection}>
-                        <div >
-                            <h4 className={styles.label}>Difference</h4>
+                        <div className={styles.valuationContainer}>
+                            <h4 className={styles.valuationLabel}>Difference</h4>
                             <p className={`${styles.differenceValue} ${valuation.differencePercent > 0 ? styles.overvalued : styles.undervalued}`}>
                                 {valuation.differencePercent ? (valuation.differencePercent > 0 ? '+' : '') + (valuation.differencePercent * 100).toFixed(2) : '0.00'}%
                             </p>
                         </div>
-                        <div>
-                            <h4 className={styles.label}>Valuation</h4>
+                        <div className={styles.valuationContainer}>
+                            <h4 className={styles.valuationLabel}>Valuation</h4>
                             <div className={`${styles.statusBadge} ${valuation.status === 'Undervalued' ? styles.statusUndervalued : valuation.status === 'Overvalued' ? styles.statusOvervalued : styles.statusFair}`}>
                                 {valuation.status}
                             </div>
                         </div>
+
                     </div>
                 </div>
             </div>
