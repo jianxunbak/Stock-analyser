@@ -4,32 +4,65 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.259);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(10px);
 }
 
 .modal {
-    background-color: var(--bg-secondary);
-    border-radius: 12px;
+    /* background-color: var(--bg-secondary); */
+    border-radius: 2rem;
     width: 95%;
     max-width: 900px;
     max-height: 80vh;
     display: flex;
     flex-direction: column;
-    box-shadow: var(--card-shadow);
-    border: 1px solid var(--border-color);
+    /* box-shadow: var(--card-shadow);
+    border: 1px solid var(--border-color); */
+
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 15px 35px rgba(0, 0, 0, 0.5),
+        inset 5px 3.5px 5px rgba(255, 255, 255, 0.2),
+        inset -2px -2px 5px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+}
+
+/* Specular Highlight / Reflection */
+.modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+    background: linear-gradient(105deg,
+            rgba(255, 255, 255, 0.15) 0%,
+            rgba(255, 255, 255, 0.05) 30%,
+            transparent 50%);
+    pointer-events: none;
+}
+
+/* Ensure content sits above the background effects */
+.modal>* {
+    position: relative;
+    z-index: 1;
 }
 
 .header {
     padding: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
+    /* border-bottom: 1px solid var(--border-color); */
     display: flex;
     justify-content: space-between;
     align-items: center;
+
 }
 
 .title {
@@ -50,12 +83,15 @@
 }
 
 .closeButton:hover {
-    background-color: var(--glass-bg);
-    color: var(--text-primary);
+    background: transparent;
+    transform: translateY(-2px);
+    box-shadow:
+        0 6px 12px rgba(96, 165, 250, 0.5),
+        inset 0 2px 4px rgba(96, 165, 250, 0.5);
 }
 
 .content {
-    padding: 1.5rem;
+    padding: 0;
     overflow-y: auto;
 }
 
@@ -79,17 +115,18 @@
 /* Header Row */
 .headerRow {
     display: grid;
+    justify-content: space-between;
     grid-template-columns: 110px 110px 110px 110px 110px 110px 110px;
     /* Fixed widths for better control */
-    padding: 0.75rem 0.5rem;
+    padding: 0;
     /* Match row padding */
     font-size: 0.75rem;
     font-weight: 600;
     color: var(--text-secondary);
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    border-bottom: 1px solid var(--border-color);
-    margin-bottom: 0.5rem;
+    /* border-bottom: 1px solid var(--border-color); */
+    margin: 0;
     text-align: center;
     min-width: 650px;
     /* Ensure minimum width to trigger scroll */
@@ -105,17 +142,18 @@
 /* Data Row */
 .row {
     display: grid;
+    justify-content: space-between;
     grid-template-columns: 110px 110px 110px 110px 110px 110px 110px;
     /* Fixed widths matching header */
     align-items: center;
-    padding: 1rem 0.5rem;
-    background-color: var(--bg-primary);
-    border: 1px solid var(--border-color);
+    padding: 0;
+    /* border: 1px solid var(--border-color); */
     border-radius: 8px;
     transition: all 0.2s;
     text-align: center;
     gap: 0.5rem;
     min-width: 650px;
+    background-color: transparent;
     /* Ensure minimum width to trigger scroll */
 }
 
