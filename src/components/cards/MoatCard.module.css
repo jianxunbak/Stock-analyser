@@ -176,7 +176,7 @@
 }
 
 .chartContainer {
-    height: 300px;
+    min-height: 300px;
     /* Smaller for mobile */
     width: 100%;
     margin-bottom: 2rem;
@@ -191,7 +191,7 @@
 
 @media (min-width: 768px) {
     .chartContainer {
-        height: 480px;
+        min-height: 480px;
         /* Desktop */
     }
 }
@@ -290,8 +290,16 @@
 .chartTitle {
     font-size: 0.875rem;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0;
     box-sizing: border-box;
+}
+
+.chartNote {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    box-sizing: border-box;
+    margin: 0;
+    margin-bottom: 1rem;
 }
 
 .aiButton {

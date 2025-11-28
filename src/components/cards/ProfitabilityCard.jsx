@@ -95,7 +95,7 @@ const ProfitabilityCard = () => {
                 {chartData.length > 0 ? (
                     <div className={styles.chartWrapper}>
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 50 }}>
+                            <ComposedChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                                 <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
                                 <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
@@ -117,13 +117,7 @@ const ProfitabilityCard = () => {
                                     }}
                                 />
                                 <Legend wrapperStyle={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    alignItems: 'center',
-                                    paddingTop: 10,
-                                    paddingBottom: 10,
+                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
                                 }} />
                                 <Bar dataKey="revenue" name="Total Revenue" fill="#3B82F6" barSize={barSize} />
                                 <Bar dataKey="receivables" name="Accounts Receivable" fill="#EF4444" barSize={barSize} />
@@ -143,7 +137,7 @@ const ProfitabilityCard = () => {
                 {profitability.ccc_history && profitability.ccc_history.length > 0 ? (
                     <div className={styles.chartWrapper}>
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={[...profitability.ccc_history].reverse()} margin={{ top: 10, right: 10, left: -20, bottom: 50 }}>
+                            <ComposedChart data={[...profitability.ccc_history].reverse()} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                                 <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
                                 <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} label={{ value: 'Days', angle: -90, position: 'insideLeft', fill: chartColors.text }} />
@@ -165,13 +159,7 @@ const ProfitabilityCard = () => {
                                     }}
                                 />
                                 <Legend wrapperStyle={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    alignItems: 'center',
-                                    paddingTop: 10,
-                                    paddingBottom: 10,
+                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
                                 }} />
                                 <Bar dataKey="value" name="Cash Conversion Cycle" fill="#10B981" barSize={barSize} />
                             </ComposedChart>

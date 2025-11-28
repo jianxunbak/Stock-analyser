@@ -57,12 +57,14 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
             setAiDescription(result.description || '');
             setHasEvaluated(true);
             lastEvaluatedSymbol.current = stockData.overview.symbol;
+            console.log("State updated: Scores, Description, HasEvaluated");
         } catch (err) {
             console.error("AI Evaluation failed:", err);
             setAiDescription("Failed to retrieve moat from AI, please evaluate yourself.");
         } finally {
             setIsEvaluating(false);
             if (onIsEvaluatingChange) onIsEvaluatingChange(false);
+            console.log("Evaluation finished, isEvaluating set to false");
         }
     };
 
@@ -78,6 +80,7 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
 
     React.useEffect(() => {
         // Reset state when symbol changes
+        console.log("Resetting MoatCard state for symbol:", stockData?.overview?.symbol);
         setScores({
             brand: 0,
             barriers: 0,
@@ -336,7 +339,8 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
             {/* Zone 3: Chart (Bottom) */}
             <div className={styles.bottomZone}>
                 <div className={styles.chartContainer}>
-                    <h4 className={styles.chartTitle}>20-Year Price Performance (% Growth)</h4>
+                    <h4 className={styles.chartTitle}>20-Year Growth Performance (%)</h4>
+                    <p className={styles.chartNote}>(in hundreds)</p>
 
                     <div className={styles.comparisonControls}>
                         <input
@@ -368,7 +372,7 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
 
                     <div className={styles.chartWrapper}>
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <AreaChart data={mergedChartData} margin={{ top: 10, right: 0, left: -20, bottom: 100 }}>
+                            <AreaChart data={mergedChartData} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
                                 <defs>
                                     <linearGradient id="colorPriceMoat" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.8} />
@@ -391,14 +395,6 @@ const MoatCard = ({ onMoatStatusChange, onIsEvaluatingChange }) => {
                                     tickFormatter={(val) => {
                                         // Ensure val is treated as a percentage (0-100) and display divided by 100
                                         return `${(val / 100).toFixed(1)}%`;
-                                    }}
-                                    label={{
-                                        value: 'In hundreds',
-                                        angle: -90,
-                                        position: 'insideLeft', // Positions the label vertically on the Y-axis
-                                        offset: 60, // Adjust this offset to move the label away from the tick numbers
-                                        fill: chartColors.text,
-                                        fontSize: 12
                                     }}
 
                                 />

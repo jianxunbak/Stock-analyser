@@ -129,7 +129,7 @@ const GrowthCard = () => {
                 {financialData.length > 0 ? (
                     <div className={styles.chartWrapper}>
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: 10, bottom: 50 }}>
+                            <ComposedChart data={financialData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                                 <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
                                 <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `$${(val / 1e9).toFixed(0)}B`} />
@@ -151,13 +151,7 @@ const GrowthCard = () => {
                                     }}
                                 />
                                 <Legend wrapperStyle={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    alignItems: 'center',
-                                    paddingTop: 10,
-                                    paddingBottom: 10,
+                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
                                 }} />
                                 <Bar dataKey="revenue" name="Revenue" fill="#3B82F6" barSize={barSize} />
                                 <Bar dataKey="opIncome" name="Operating Income" fill="#8B5CF6" barSize={barSize} />
@@ -179,7 +173,7 @@ const GrowthCard = () => {
                 {marginData.length > 0 ? (
                     <div className={styles.chartWrapper}>
                         <ResponsiveContainer width="100%" height={chartHeight}>
-                            <ComposedChart data={marginData} margin={{ top: 10, right: 10, left: 10, bottom: 50 }}>
+                            <ComposedChart data={marginData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke={chartColors.grid} />
                                 <XAxis dataKey="date" stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} />
                                 <YAxis stroke={chartColors.text} tick={{ fontSize: 10, fill: chartColors.text }} tickFormatter={(val) => `${val}%`} />
@@ -201,13 +195,7 @@ const GrowthCard = () => {
                                     }}
                                 />
                                 <Legend wrapperStyle={{
-                                    width: '100%',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    fontSize: '12px',
-                                    alignItems: 'center',
-                                    paddingTop: 10,
-                                    paddingBottom: 10,
+                                    width: '100%', display: 'flex', justifyContent: 'center', paddingTop: 10, paddingLeft: 35, fontSize: '12px', alignItems: 'center'
                                 }} />
                                 <Bar dataKey="grossMargin" name="Gross Margin" fill="#8B5CF6" barSize={barSize} />
                                 <Bar dataKey="netMargin" name="Net Margin" fill="#EC4899" barSize={barSize} />

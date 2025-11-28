@@ -4,6 +4,8 @@ import { StockDataProvider } from './hooks/useStockData';
 import HeroPage from './components/pages/HeroPage';
 import DashboardPage from './components/pages/DashboardPage';
 
+import ScrollToTop from './components/ui/ScrollToTop';
+
 function App() {
   return (
     <StockDataProvider>
@@ -12,6 +14,7 @@ function App() {
           <Route path="/" element={<HeroPage />} />
           <Route path="/analysis" element={<DashboardPage />} />
         </Routes>
+        <ScrollToTop />
       </Router>
     </StockDataProvider>
   );

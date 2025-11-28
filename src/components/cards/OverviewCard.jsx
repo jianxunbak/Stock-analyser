@@ -5,7 +5,7 @@ import {
 } from 'recharts';
 import styles from './OverviewCard.module.css';
 import { ChevronDown, Star } from 'lucide-react';
-import axios from 'axios';
+import { fetchChartData } from '../../services/api';
 import { useTheme } from '../../context/ThemeContext';
 
 const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
@@ -43,66 +43,17 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
         return () => window.removeEventListener('watchlist-updated', checkWatchlist);
     }, [stockData?.overview?.symbol]);
 
-    const toggleWatchlist = () => {
-        if (!stockData?.overview?.symbol) return;
 
-        const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
-        const symbol = stockData.overview.symbol;
-
-        if (isInWatchlist) {
-            // Remove
-            const updated = watchlist.filter(item => item.ticker !== symbol);
-            localStorage.setItem('watchlist', JSON.stringify(updated));
-            setIsInWatchlist(false);
-            window.dispatchEvent(new Event('watchlist-updated'));
-        } else {
-            // Add
-            // Extract Data
-            const currentPrice = stockData.overview.price || 0;
-            const intrinsicValue = stockData.valuation?.intrinsicValue || 0;
-
-            // Support & Signal Logic
-            let supportLevel = null;
-            let signal = "Hold";
-
-            if (stockData.support_resistance?.levels?.length > 0) {
-                const level = stockData.support_resistance.levels[0];
-                supportLevel = level.price;
-
-                // Signal Logic (matching SupportResistanceCard)
-                if (currentPrice <= level.price) {
-                    signal = "Buy";
-                } else if (currentPrice >= level.price * 1.5) {
-                    signal = "Sell";
-                }
-            }
-
-            const calculatedTotal = displayedCriteria.filter(c => c.status === "Pass").length;
-            const score = stockData?.score;
-
-            const newItem = {
-                ticker: symbol,
-                price: currentPrice,
-                score: calculatedTotal && score?.max ? ((calculatedTotal / score.max) * 100).toFixed(0) : 0,
-                intrinsicValue: intrinsicValue,
-                supportLevel: supportLevel,
-                signal: signal
-            };
-            localStorage.setItem('watchlist', JSON.stringify([...watchlist, newItem]));
-            setIsInWatchlist(true);
-            window.dispatchEvent(new Event('watchlist-updated'));
-        }
-    };
 
     // Fetch chart data when timeframe changes
     useEffect(() => {
         if (!stockData?.overview?.symbol) return;
 
-        const fetchChartData = async () => {
+        const loadChartData = async () => {
             setChartLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8000/api/chart/${stockData.overview.symbol}/${timeframe}`);
-                setChartData(response.data.data || []);
+                const data = await fetchChartData(stockData.overview.symbol, timeframe);
+                setChartData(data.data || []);
             } catch (error) {
                 console.error('Error fetching chart data:', error);
                 setChartData([]);
@@ -111,7 +62,7 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
             }
         };
 
-        fetchChartData();
+        loadChartData();
     }, [timeframe, stockData?.overview?.symbol]);
 
     const formatXAxis = (tickItem) => {
@@ -256,7 +207,60 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
         return total;
     }, [displayedCriteria]);
 
-    const calculatedScoreColor = calculatedTotal >= 70 ? styles.scoreGreen : calculatedTotal >= 40 ? styles.scoreYellow : styles.scoreRed;
+    const percentageScore = useMemo(() => {
+        const max = stockData?.score?.max || 100;
+        return ((calculatedTotal / max) * 100).toFixed(0);
+    }, [calculatedTotal, stockData]);
+
+    const calculatedScoreColor = percentageScore >= 70 ? styles.scoreGreen : percentageScore >= 40 ? styles.scoreYellow : styles.scoreRed;
+
+    const toggleWatchlist = () => {
+        if (!stockData?.overview?.symbol) return;
+
+        const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        const symbol = stockData.overview.symbol;
+
+        if (isInWatchlist) {
+            // Remove
+            const updated = watchlist.filter(item => item.ticker !== symbol);
+            localStorage.setItem('watchlist', JSON.stringify(updated));
+            setIsInWatchlist(false);
+            window.dispatchEvent(new Event('watchlist-updated'));
+        } else {
+            // Add
+            // Extract Data
+            const currentPrice = stockData.overview.price || 0;
+            const intrinsicValue = stockData.valuation?.intrinsicValue || 0;
+
+            // Support & Signal Logic
+            let supportLevel = null;
+            let signal = "Hold";
+
+            if (stockData.support_resistance?.levels?.length > 0) {
+                const level = stockData.support_resistance.levels[0];
+                supportLevel = level.price;
+
+                // Signal Logic (matching SupportResistanceCard)
+                if (currentPrice <= level.price) {
+                    signal = "Buy";
+                } else if (currentPrice >= level.price * 1.5) {
+                    signal = "Sell";
+                }
+            }
+
+            const newItem = {
+                ticker: symbol,
+                price: currentPrice,
+                score: percentageScore,
+                intrinsicValue: intrinsicValue,
+                supportLevel: supportLevel,
+                signal: signal
+            };
+            localStorage.setItem('watchlist', JSON.stringify([...watchlist, newItem]));
+            setIsInWatchlist(true);
+            window.dispatchEvent(new Event('watchlist-updated'));
+        }
+    };
 
     // Early returns AFTER all hooks
     if (loading) return <div className={styles.loading}></div>;
@@ -330,7 +334,7 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                     <div className={styles.scoreHeader}>
                         <h3 className={styles.scoreTitle}>Stock Health Score</h3>
                         <div className={`${styles.totalScore} ${calculatedScoreColor}`}>
-                            {calculatedTotal}<span className={styles.scoreMax}>/100</span>
+                            {percentageScore}%
                         </div>
                     </div>
                     <div className={styles.criteriaList}>
@@ -399,7 +403,7 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
 
             {/* Bottom Zone: Chart */}
             <div className={styles.bottomZone}>
-                <div className={styles.chartHeader}>
+                {/* <div className={styles.chartHeader}>
                     <h3 className={styles.chartTitle}>Price History</h3>
                     <div className={styles.timeframeControls}>
                         {['1D', '5D', '1M', '3M', '6M', 'YTD', '1Y', '5Y', 'All'].map(tf => (
@@ -412,8 +416,22 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                             </button>
                         ))}
                     </div>
-                </div>
+                </div> */}
                 <div className={styles.chartContainer}>
+                    <div className={styles.chartHeader}>
+                        <h3 className={styles.chartTitle}>Price History</h3>
+                        <div className={styles.timeframeControls}>
+                            {['1D', '5D', '1M', '3M', '6M', 'YTD', '1Y', '5Y', 'All'].map(tf => (
+                                <button
+                                    key={tf}
+                                    className={`${styles.tfButton} ${timeframe === tf ? styles.activeTf : ''}`}
+                                    onClick={() => setTimeframe(tf)}
+                                >
+                                    {tf}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                     {chartLoading || chartData.length === 0 ? (
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                             <p>
@@ -442,7 +460,6 @@ const OverviewCard = ({ moatStatusLabel, isMoatEvaluating }) => {
                                         domain={['auto', 'auto']}
                                         stroke={chartColors.text}
                                         tick={{ fontSize: 10, fill: chartColors.text }}
-
                                     />
                                     <Tooltip
                                         contentStyle={{

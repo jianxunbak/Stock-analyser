@@ -4,6 +4,14 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 import os
+import requests
+import json
+from dotenv import load_dotenv
+import pathlib
+
+# Load .env from the project root (one level up from backend/)
+env_path = pathlib.Path(__file__).parent.parent / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Set cache directory for Vercel (read-only file system fix)
 if os.environ.get('VERCEL'):
@@ -1415,7 +1423,7 @@ async def get_chart(ticker: str, timeframe: str):
             
             chart_data.append(item)
         
-        return {"data": chart_data, "interval": config["interval"]}
+        return clean_nan({"data": chart_data, "interval": config["interval"]})
         
     except Exception as e:
         print(f"Error fetching chart data for {ticker} ({timeframe}): {e}")
@@ -1425,6 +1433,82 @@ async def get_chart(ticker: str, timeframe: str):
 async def read_stock(ticker: str):
     data = get_stock_data(ticker)
     return clean_nan(data)
+
+@app.get("/api/evaluate_moat/{ticker}")
+async def evaluate_moat(ticker: str):
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        raise HTTPException(status_code=500, detail="GEMINI_API_KEY not found in environment variables.")
+
+    current_date = pd.Timestamp.now().strftime("%Y-%m-%d")
+    
+    prompt = f"""
+    Evaluate the economic moat of the stock with code: {ticker}.
+    Current Date: {current_date}.
+    Please evaluate based on the latest information available as of this date.
+    
+    Criteria to evaluate:
+    1. Brand Monopoly
+    2. Network Effect
+    3. Economy of Scale
+    4. High Barrier to Entry
+    5. High Switching Cost
+
+    For each criteria, provide an evaluation of exactly one of these three values: "High", "Low", or "None".
+    Also provide a short description (around 3 short sentences) explaining why you evaluated the stock this way.
+    
+    Return the response in the following JSON format ONLY, do not include markdown formatting or explanations outside the JSON:
+    {{
+      "brandMonopoly": "High/Low/None",
+      "networkEffect": "High/Low/None",
+      "economyOfScale": "High/Low/None",
+      "highBarrierToEntry": "High/Low/None",
+      "highSwitchingCost": "High/Low/None",
+      "description": "Your short explanation here"
+    }}
+    """
+    
+    payload = {
+        "contents": [{
+            "parts": [{"text": prompt}]
+        }],
+        "generationConfig": {
+            "responseMimeType": "application/json"
+        }
+    }
+
+    models_to_try = ["gemini-2.5-flash-lite", "gemini-2.5-flash"]
+    last_exception = None
+
+    for model in models_to_try:
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={api_key}"
+        
+        try:
+            response = requests.post(url, headers={"Content-Type": "application/json"}, json=payload, timeout=30)
+            response.raise_for_status()
+            result = response.json()
+            
+            # Extract text from response
+            try:
+                if "candidates" not in result or not result["candidates"]:
+                     continue
+
+                text = result["candidates"][0]["content"]["parts"][0]["text"]
+                # Clean up markdown if present (though responseMimeType should handle it)
+                text = text.replace("```json", "").replace("```", "").strip()
+                return json.loads(text)
+            except (KeyError, IndexError, json.JSONDecodeError) as e:
+                print(f"Error parsing Gemini response from {model}: {e}")
+                last_exception = e
+                continue # Try next model if parsing fails
+                
+        except requests.exceptions.RequestException as e:
+            print(f"Gemini API Error with {model}: {e}")
+            last_exception = e
+            continue # Try next model
+
+    # If we get here, all models failed
+    raise HTTPException(status_code=500, detail=f"All Gemini models failed. Last error: {str(last_exception)}")
 
 if __name__ == "__main__":
     import uvicorn
